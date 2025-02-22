@@ -1,0 +1,8 @@
+MMAIL_MAILER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=reinjunelaride34@gmail.com
+MAIL_PASSWORD=keicwwstfbbtibys
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS="reinjunelaride34@gmail.com"
+MAIL_FROM_NAME="${APP_NAME}"

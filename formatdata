@@ -1,0 +1,57 @@
+<!-- login POST -->
+
+{
+    "email" :"",
+    "password" : ""
+}
+
+<!-- register POST -->
+
+{
+    "fname" : "",
+    "fname" : "",
+    "mname" : "", //nullable
+    "email" : "", //unique
+    "password" : "",
+    "password_confirmation" : ""
+}
+
+
+<!-- MIDDLEWARE NEED SUPPLY TOKEN -->
+
+<!-- menu GET-->
+
+
+<!-- menu POST -->
+//multiple lines array of objects that is nullable
+
+{
+    "description" : "Home",
+    "icon" : "icon-home",
+    "class" : "class-home",
+    "routes" : "home.index",
+    "sort" : "1",
+    "lines" : [
+         {
+             "description" :"Security roles",
+             "icon" : "icon-sr",
+             "class" : "class-sr",
+             "routes" : "security.index",
+             "sort" :""
+         },
+         {
+             "description" :"Users",
+             "icon" : "icon-user",
+             "class" : "class-user",
+             "routes" : "user.index",
+             "sort" :"2"
+         },
+         {
+             "description" :"",
+             "icon" : "",
+             "class" : "",
+             "routes" : "",
+             "sort" :""
+         }
+    ]
+}
