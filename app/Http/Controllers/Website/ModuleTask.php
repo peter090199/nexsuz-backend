@@ -9,6 +9,8 @@ use Exception;
 use Illuminate\Support\Facades\Auth; 
 use Carbon\Carbon;
 use Carbon\CarbonTimeZone;
+use App\Models\Module;
+use Illuminate\Support\Facades\DB;
 
 
 class ModuleTask extends Controller
@@ -115,44 +117,19 @@ public function get(Request $request)
 }
 
 //not authinticated
-
-public function getAbout(Request $request)
+public function getAbout()
 {
     try {
-
-        $timezone = new CarbonTimeZone('Asia/Manila');
-
-        // Check if transNo is provided to fetch a specific record
-        if ($request->has('transNo')) {
-            $about = About::where('transNo', $request->transNo)->first();
-
-            if (!$about) {
-                return response()->json([
-                    'success' => false,
-                    'error' => 'Not Found',
-                    'message' => "No record found for TransNo '{$request->transNo}'."
-                ], 404);
-            }
-
-            return response()->json([
-                'success' => true,
-                'data' => $about
-            ], 200);
-        }
-
-        // Fetch all records
-        $data = About::all()->map(function ($item) use ($timezone) {
-            $item->created_at = Carbon::parse($item->created_at)->setTimezone($timezone)->format('Y-m-d H:i:s');
-            $item->updated_at = Carbon::parse($item->updated_at)->setTimezone($timezone)->format('Y-m-d H:i:s');
-            return $item;
-        });
+        $data = DB::table('module')
+            ->rightJoin('about', 'module.transNo', '=', 'about.transNo')
+            ->select('module.id', 'module.transNo','about.about', 'about.description')
+            ->get();
 
         return response()->json([
             'success' => true,
             'data' => $data
         ], 200);
-
-    } catch (Exception $e) {
+    } catch (\Exception $e) {
         return response()->json([
             'success' => false,
             'error' => 'Something went wrong!',

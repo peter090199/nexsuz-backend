@@ -19,6 +19,7 @@ use App\Http\Controllers\System\Securityroles\SecurityroleController;
 use App\Http\Controllers\System\Roles\RoleController;
 use App\Http\Controllers\Website\MenuItemController;
 use App\Http\Controllers\Website\ModuleTask;
+use App\Http\Controllers\Website\ContactController;
 
 use App\Http\Controllers\Select2\SelectController;
 use App\Http\Controllers\ImageController;
@@ -65,6 +66,8 @@ Route::post('accountactivation',[RegisterController::class,'accountactivation'])
     Route::get('allModules', [MenuItemController::class, 'getAllModules']);
 
     Route::get('getAbout', [ModuleTask::class, 'getAbout']);
+
+    Route::get('get_contact', [ContactController::class, 'get_contact']);
 });
 
 //task module website
@@ -122,9 +125,17 @@ Route::middleware(['auth:sanctum','checkstatus'])->group(function () {
 
 
     //taskmodule -websites
+
+    //about
     Route::post('post', [ModuleTask::class, 'post']);
     Route::get('get', [ModuleTask::class, 'get']);
     Route::delete('delete/{transNo}', [ModuleTask::class, 'delete']);
+
+    //contacts
+    Route::post('post_contact', [ContactController::class, 'post_contact']);
+    Route::get('get_contactByRole', [ContactController::class, 'get_contactByRole']);
+    Route::put('update_contact/{transNo}', [ContactController::class, 'update_contact']);
+    Route::delete('delete_contact/{transNo}', [ContactController::class, 'delete_contact']);
 
 
 });

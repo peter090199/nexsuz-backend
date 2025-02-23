@@ -11,6 +11,7 @@ use App\Models\MenuItemDescImage;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth; 
 
+
 class MenuItemController extends Controller
 {
     public function SaveModule(Request $request)
@@ -95,6 +96,7 @@ class MenuItemController extends Controller
 
     public function getAllModules()
     {
+      
         try {
             // Retrieve all menu items with only the required fields
             $menuItems = MenuItem::select('transNo', 'module', 'description', 'created_at', 'updated_at')
