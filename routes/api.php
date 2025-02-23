@@ -70,13 +70,6 @@ Route::post('accountactivation',[RegisterController::class,'accountactivation'])
     Route::get('get_contact', [ContactController::class, 'get_contact']);
 });
 
-//task module website
-// Route::prefix('taskmodule')->group(function () {
-//     Route::post('post', [ModuleTask::class, 'post']);
-
-
-// });
-
 
 Route::middleware(['auth:sanctum','checkstatus'])->group(function () {
     Route::get('/user', function (Request $request) {
@@ -122,14 +115,11 @@ Route::middleware(['auth:sanctum','checkstatus'])->group(function () {
     Route::get('getAllModules', [MenuItemController::class, 'getAllModules']);
     Route::post('upload-images', [ImageController::class, 'uploadImages']);
 
-
-
-    //taskmodule -websites
-
     //about
     Route::post('post', [ModuleTask::class, 'post']);
     Route::get('get', [ModuleTask::class, 'get']);
     Route::delete('delete/{transNo}', [ModuleTask::class, 'delete']);
+    Route::put('update_about/{transNo}', [ModuleTask::class, 'update_about']);
 
     //contacts
     Route::post('post_contact', [ContactController::class, 'post_contact']);

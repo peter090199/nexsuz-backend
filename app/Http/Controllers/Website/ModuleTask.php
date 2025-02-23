@@ -64,7 +64,122 @@ class ModuleTask extends Controller
         }
     }
 
-public function get(Request $request)
+    public function update_about(Request $request, $transNo)
+    {
+        try {
+            if (!Auth::check()) {
+                return response()->json(['error' => 'Unauthorized: User not authenticated'], 401);
+            }
+
+            $request->validate([
+                'about' => 'required|string',
+                'description' => 'nullable|string',
+              
+            ]);
+
+            $about = About::where('transNo', $transNo)->first();
+
+            if (!$about) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'About not found'
+                ], 404);
+            }
+
+            $user = Auth::user();
+
+            // Update contact details
+            $about->about = $request->about;
+            $about->description = $request->description;
+            $about->updated_by = $user->fullname;
+            $about->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'About updated successfully!',
+                'data' => $about
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Something went wrong!',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function get(Request $request)
+    {
+        try {
+            $timezone = new CarbonTimeZone('Asia/Manila');
+    
+            // Check if the user is authenticated
+            if (!Auth::check()) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Unauthorized',
+                    'message' => 'You must be logged in to access this resource.'
+                ], 401);
+
+            }
+      
+            $user = Auth::user();
+    
+            // Fetch a specific record if transNo is provided
+            if ($request->has('transNo')) {
+                $c = About::where('transNo', $request->transNo)->first();
+    
+                if (!$c) {
+                    return response()->json([
+                        'success' => false,
+                        'error' => 'Not Found',
+                        'message' => "No record found for TransNo '{$request->transNo}'."
+                    ], 404);
+                }
+    
+                return response()->json([
+                    'success' => true,
+                    'data' => $this->filterContactData($c, $user)
+                ], 200);
+            }
+    
+            // Fetch all records
+            $data = About::all()->map(fn($item) => $this->filterContactData($item, $user, $timezone));
+    
+            return response()->json([
+                'success' => true,
+                'data' => $data
+            ], 200);
+    
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Something went wrong!',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+    
+    private function filterContactData($contact, $user, $timezone = null)
+    {
+        $contactArray = $contact->toArray();
+    
+        // Format timestamps if timezone is provided
+        if ($timezone) {
+            $contactArray['created_at'] = Carbon::parse($contact->created_at)->setTimezone($timezone)->format('Y-m-d H:i:s');
+            $contactArray['updated_at'] = Carbon::parse($contact->updated_at)->setTimezone($timezone)->format('Y-m-d H:i:s');
+        }
+    
+        // Hide fields for DEF-ADMIN
+        if ($user->role_code == 'DEF-ADMIN') {
+            unset($contactArray['created_by'], $contactArray['updated_by'], $contactArray['created_at'], $contactArray['updated_at']);
+        }
+    
+        return $contactArray;
+    }
+
+public function getxx(Request $request)
 {
     try {
         if (!Auth::check()) {
