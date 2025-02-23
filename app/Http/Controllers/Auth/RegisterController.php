@@ -101,7 +101,6 @@ class RegisterController extends Controller
                 'fname' => $request->fname,
                 'email' => $request->email,
                 'code' => $verificationCode,
-                'code' => $verificationCode,
             ];
 
             // Send the activation email
