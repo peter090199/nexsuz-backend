@@ -20,6 +20,7 @@ use App\Http\Controllers\System\Roles\RoleController;
 use App\Http\Controllers\Website\MenuItemController;
 use App\Http\Controllers\Website\ModuleTask;
 use App\Http\Controllers\Website\ContactController;
+use App\Http\Controllers\Website\BlogController;
 
 use App\Http\Controllers\Select2\SelectController;
 use App\Http\Controllers\ImageController;
@@ -127,6 +128,8 @@ Route::middleware(['auth:sanctum','checkstatus'])->group(function () {
     Route::put('update_contact/{transNo}', [ContactController::class, 'update_contact']);
     Route::delete('delete_contact/{transNo}', [ContactController::class, 'delete_contact']);
 
-
+    //blog
+    Route::post('post_blog', [BlogController::class, 'post_blog']);
+    
 });
 
