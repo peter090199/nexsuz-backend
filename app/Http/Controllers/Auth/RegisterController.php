@@ -107,6 +107,7 @@ class RegisterController extends Controller
             Mail::to($request->email)->send(new Registeractivation($data));
 
             // Commit transaction
+            
             DB::commit();
 
             // Return a success response
