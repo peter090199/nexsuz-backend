@@ -184,4 +184,36 @@ class BlogController extends Controller
     }
 
 
+    public function delete_contact($transNo)
+    {
+        try {
+            if (!Auth::check()) {
+                return response()->json(['error' => 'Unauthorized: User not authenticated'], 401);
+            }
+
+            $data = Blog::where('transNo', $transNo)->first();
+
+            if (!$data) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Blog not found'
+                ], 404);
+            }
+
+            $data->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => "Blog '{$transNo}' deleted successfully!"
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Something went wrong!',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
 }
