@@ -184,7 +184,7 @@ class BlogController extends Controller
     }
 
 
-    public function delete_contact($transNo)
+    public function delete_blog($transNo)
     {
         try {
             if (!Auth::check()) {
