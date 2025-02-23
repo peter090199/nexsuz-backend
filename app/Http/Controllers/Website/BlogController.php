@@ -138,5 +138,50 @@ class BlogController extends Controller
         return $contactArray;
     }
 
+    
+    public function update_blog(Request $request, $transNo)
+    {
+        try {
+            if (!Auth::check()) {
+                return response()->json(['error' => 'Unauthorized: User not authenticated'], 401);
+            }
+
+            $request->validate([
+                'blog_title' => 'required|string',
+                'description' => 'nullable|string',
+              
+            ]);
+
+            $data = Blog::where('transNo', $transNo)->first();
+
+            if (!$data) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Blog not found'
+                ], 404);
+            }
+
+            $user = Auth::user();
+
+            $data->blog_title = $request->blog_title;
+            $data->description = $request->description;
+            $contact->updated_by = $user->fullname;
+            $contact->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Blog updated successfully!',
+                'data' => $contact
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Something went wrong!',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
 
 }

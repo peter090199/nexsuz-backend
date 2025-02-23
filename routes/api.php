@@ -131,6 +131,8 @@ Route::middleware(['auth:sanctum','checkstatus'])->group(function () {
     //blog 
     Route::post('post_blog', [BlogController::class, 'post_blog']);
     Route::get('get_blogByRole', [BlogController::class, 'get_blogByRole']);
+    Route::put('update_blog/{transNo}', [BlogController::class, 'update_blog']);
+
 
 });
 
