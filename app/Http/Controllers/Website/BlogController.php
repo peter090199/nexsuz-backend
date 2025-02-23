@@ -65,4 +65,78 @@ class BlogController extends Controller
         }
     }
     
+    public function get_blogByRole(Request $request)
+    {
+        try {
+            $timezone = new CarbonTimeZone('Asia/Manila');
+    
+            // Check if the user is authenticated
+            if (!Auth::check()) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Unauthorized',
+                    'message' => 'You must be logged in to access this resource.'
+                ], 401);
+
+            }
+      
+            $user = Auth::user();
+    
+            // Fetch a specific record if transNo is provided
+            if ($request->has('transNo')) {
+                $c = Blog::where('transNo', $request->transNo)->first();
+    
+                if (!$c) {
+                    return response()->json([
+                        'success' => false,
+                        'error' => 'Not Found',
+                        'message' => "No record found for TransNo '{$request->transNo}'."
+                    ], 404);
+                }
+    
+                return response()->json([
+                    'success' => true,
+                    'data' => $this->filterContactData($c, $user)
+                ], 200);
+            }
+    
+            // Fetch all records
+            $data = Blog::all()->map(fn($item) => $this->filterContactData($item, $user, $timezone));
+    
+            return response()->json([
+                'success' => true,
+                'data' => $data
+            ], 200);
+    
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Something went wrong!',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+    
+    /**
+     * Filters contact data based on user role
+     */
+    private function filterContactData($contact, $user, $timezone = null)
+    {
+        $contactArray = $contact->toArray();
+    
+        // Format timestamps if timezone is provided
+        if ($timezone) {
+            $contactArray['created_at'] = Carbon::parse($contact->created_at)->setTimezone($timezone)->format('Y-m-d H:i:s');
+            $contactArray['updated_at'] = Carbon::parse($contact->updated_at)->setTimezone($timezone)->format('Y-m-d H:i:s');
+        }
+    
+        // Hide fields for DEF-ADMIN
+        if ($user->role_code == 'DEF-ADMIN') {
+            unset($contactArray['created_by'], $contactArray['updated_by'], $contactArray['created_at'], $contactArray['updated_at']);
+        }
+    
+        return $contactArray;
+    }
+
+
 }

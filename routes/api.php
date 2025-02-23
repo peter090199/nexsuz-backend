@@ -128,8 +128,9 @@ Route::middleware(['auth:sanctum','checkstatus'])->group(function () {
     Route::put('update_contact/{transNo}', [ContactController::class, 'update_contact']);
     Route::delete('delete_contact/{transNo}', [ContactController::class, 'delete_contact']);
 
-    //blog
+    //blog 
     Route::post('post_blog', [BlogController::class, 'post_blog']);
-    
+    Route::get('get_blogByRole', [BlogController::class, 'get_blogByRole']);
+
 });
 
