@@ -165,13 +165,13 @@ class BlogController extends Controller
 
             $data->blog_title = $request->blog_title;
             $data->description = $request->description;
-            $contact->updated_by = $user->fullname;
-            $contact->save();
+            $data->updated_by = $user->fullname;
+            $data->save();
 
             return response()->json([
                 'success' => true,
                 'message' => 'Blog updated successfully!',
-                'data' => $contact
+                'data' => $data
             ], 200);
 
         } catch (\Exception $e) {
