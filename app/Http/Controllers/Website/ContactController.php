@@ -220,10 +220,9 @@ class ContactController extends Controller
                     'error' => 'Unauthorized',
                     'message' => 'You must be logged in to access this resource.'
                 ], 401);
-                
+
             }
       
-    
             $user = Auth::user();
     
             // Fetch a specific record if transNo is provided
