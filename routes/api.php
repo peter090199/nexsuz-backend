@@ -21,6 +21,8 @@ use App\Http\Controllers\Website\MenuItemController;
 use App\Http\Controllers\Website\ModuleTask;
 use App\Http\Controllers\Website\ContactController;
 use App\Http\Controllers\Website\BlogController;
+use App\Http\Controllers\Website\BlogImageController;
+
 
 use App\Http\Controllers\Select2\SelectController;
 use App\Http\Controllers\ImageController;
@@ -133,6 +135,9 @@ Route::middleware(['auth:sanctum','checkstatus'])->group(function () {
     Route::get('get_blogByRole', [BlogController::class, 'get_blogByRole']);
     Route::put('update_blog/{transNo}', [BlogController::class, 'update_blog']);
     Route::delete('delete_blog/{transNo}', [BlogController::class, 'delete_blog']);
+    //blog image
+    Route::post('upload_images', [BlogImageController::class, 'uploadImages']);
+    Route::get('get_images', [BlogImageController::class, 'getImages']);
 
 });
 

@@ -17,17 +17,20 @@ class BlogController extends Controller
     public function post_blog(Request $request)
     {
         try {
-            // Check if the user is authenticated
+            // Ensure the user is authenticated
             if (!Auth::check()) {
-                return response()->json(['error' => 'Unauthorized: User not authenticated'], 401);
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Unauthorized',
+                    'message' => 'User authentication failed. Please log in.'
+                ], 201);
             }
     
-            // Validate the request and store validated data
+            // Validate request data
             $validated = $request->validate([
                 'transNo' => 'required|string|max:255',
                 'blog_title' => 'required|string',
                 'description' => 'required|string',
-              
             ]);
     
             // Check if transNo already exists
@@ -36,18 +39,18 @@ class BlogController extends Controller
                     'success' => false,
                     'error' => 'Duplicate Entry',
                     'message' => "The TransNo '{$validated['transNo']}' already exists."
-                ], 201); // Use 409 Conflict status instead of 201
+                ], 201); // Changed 201 to 409 Conflict
             }
     
             $user = Auth::user(); // Get authenticated user
     
-            // Save to the database
+            // Save blog data
             $data = new Blog();
             $data->transNo = $validated['transNo'];
             $data->blog_title = $validated['blog_title'];
-            $data->description = $validated['description'] ?? null;
-            $data->created_by = $user->fullname;
-            $data->updated_by = $user->fullname;
+            $data->description = $validated['description'];
+            $data->created_by = $user->fullname ?? 'Unknown User'; // Handle missing user data
+            $data->updated_by = $user->fullname ?? 'Unknown User';
             $data->save();
     
             return response()->json([
@@ -56,6 +59,13 @@ class BlogController extends Controller
                 'data' => $data
             ], 201);
     
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Validation Error',
+                'message' => $e->errors()
+            ], 422);
+            
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
