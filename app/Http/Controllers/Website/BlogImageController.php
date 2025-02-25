@@ -93,7 +93,7 @@ class BlogImageController extends Controller
         // Retrieve images belonging to the authenticated user
         $images = Image::where('user_code', $user->code)->get();
 
-        // Define your base URL (adjust if needed)
+        // Define your base URL dynamically
         $baseUrl = env('APP_URL', 'https://exploredition.com') . '/storage/';
 
         // Format response with full accessible URL
@@ -101,7 +101,7 @@ class BlogImageController extends Controller
             return [
                 'user_code' => $image->user_code,
                 'trans_no' => $image->trans_no,
-                'file_path' => $baseUrl . ltrim($image->file_path, '/')
+                'file_path' => asset("storage/" . $image->file_path) // Ensure correct path
             ];
         });
 
