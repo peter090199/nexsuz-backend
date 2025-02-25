@@ -23,6 +23,7 @@ class BlogImageController extends Controller
         $request->validate([
             'files' => 'required|array', // Ensure files is an array
             'files.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Validate each file
+            'transNo' => 'required|string' // Ensure transNo is provided
         ]);
 
         $uploadedFiles = [];
@@ -30,25 +31,28 @@ class BlogImageController extends Controller
         if ($request->hasFile('files')) {
             $user = Auth::user(); // Get authenticated user
             $userCode = $user->code ?? 'default_user'; // Get user code (fallback if null)
-            
-            foreach ($request->file('files') as $file) {
-                $uuid = Str::uuid(); // Generate unique identifier
-                
-                // Define the storage path for each image
-                $storagePath = "uploads/{$userCode}/Images/{$uuid}";
+            $transNo = $request->input('transNo'); // Get transaction number
 
-                // Store the file in 'storage/app/public/uploads/{userCode}/cvphoto/{uuid}'
+            foreach ($request->file('files') as $file) {
+               // $uuid = Str::uuid(); // Generate unique identifier
+                $originalFileName = $file->getClientOriginalName();
+                $storagePath = "uploads/{$userCode}/TransNo/{$transNo}/{$originalFileName}";
+
+                // Store the file in 'storage/app/public/uploads/{userCode}/Images/{uuid}'
                 $path = $file->store($storagePath, 'public');
 
-                // Save file path in the database
+                // Save file path and transNo in the database
                 $image = Image::create([
                     'user_code' => $user->code, // Associate image with authenticated user
                     'file_path' => $path, // Store the correct path
+                    'trans_no'  => $transNo // Store transaction number
                 ]);
 
                 // Append the image data with full accessible URL
                 $uploadedFiles[] = [
                     'user_code' => $image->user_code,
+                    'trans_no'  => $image->trans_no,
+                  //  'file_path' => url("storage/" . ltrim($image->file_path, '/')) 
                     'file_path' => asset("storage/{$path}") // Generate public URL
                 ];
             }
@@ -59,7 +63,28 @@ class BlogImageController extends Controller
             'files' => $uploadedFiles
         ], 201);
     }
-
+    
+    public function getImagesx()
+    {
+        $user = Auth::user(); // Get authenticated user
+    
+        // Retrieve images belonging to the authenticated user
+        $images = Image::where('user_code', $user->code)->get();
+    
+        // Format response with full accessible URL
+        $formattedImages = $images->map(function ($image) {
+            return [
+                'user_code' => $image->user_code,
+                'trans_no' => $image->trans_no,
+                'file_path' => asset("storage/" . ltrim($image->file_path, '/')) // ✅ Ensure full URL
+            ];
+        });
+    
+        return response()->json([
+            'message' => 'User images retrieved successfully!',
+            'images' => $formattedImages
+        ], 200);
+    }
     public function getImages()
     {
         $user = Auth::user(); // Get authenticated user
@@ -67,11 +92,15 @@ class BlogImageController extends Controller
         // Retrieve images belonging to the authenticated user
         $images = Image::where('user_code', $user->code)->get();
 
-        // Format response with full storage URL
-        $formattedImages = $images->map(function ($image) {
+        // Define your base URL (adjust if needed)
+        $baseUrl = env('APP_URL', 'https://exploredition.com') . '/storage/';
+
+        // Format response with full accessible URL
+        $formattedImages = $images->map(function ($image) use ($baseUrl) {
             return [
                 'user_code' => $image->user_code,
-                'file_path' => asset("storage/{$image->file_path}") // Generate accessible URL
+                'trans_no' => $image->trans_no,
+                'file_path' => $baseUrl . ltrim($image->file_path, '/')
             ];
         });
 
@@ -80,22 +109,5 @@ class BlogImageController extends Controller
             'images' => $formattedImages
         ], 200);
     }
-
-    
-    public function getImagesx()
-    {
-        $files = Storage::files('public/uploads'); // Get all files in the uploads folder
-
-        $images = array_map(function ($file) {
-            return asset(str_replace('public/', 'storage/', $file)); // Convert storage path to public URL
-        }, $files);
-
-        return response()->json([
-            'success' => true,
-            'images' => $images
-        ]);
-    }
-
-
 
 }
