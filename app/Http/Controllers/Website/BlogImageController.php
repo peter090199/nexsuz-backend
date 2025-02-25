@@ -64,7 +64,7 @@ class BlogImageController extends Controller
         ], 201);
     }
     
-    public function getImagesx()
+    public function getImagesxx()
     {
         $user = Auth::user(); // Get authenticated user
     
