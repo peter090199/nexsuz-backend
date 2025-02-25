@@ -85,6 +85,7 @@ class BlogImageController extends Controller
             'images' => $formattedImages
         ], 200);
     }
+    
     public function getImages()
     {
         $user = Auth::user(); // Get authenticated user
