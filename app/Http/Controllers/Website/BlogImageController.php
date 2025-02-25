@@ -17,7 +17,7 @@ class BlogImageController extends Controller
     }
 
 
-    public function uploadImages(Request $request)
+    public function uploadImagesxx(Request $request)
     {
         // Validate the request
         $request->validate([
@@ -85,7 +85,56 @@ class BlogImageController extends Controller
             'images' => $formattedImages
         ], 200);
     }
-    
+
+
+//dynamic
+
+public function uploadImages(Request $request)
+{
+    // Validate the request
+    $request->validate([
+        'files' => 'required|array', // Ensure files is an array
+        'files.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Validate each file
+        'transNo' => 'required|string' // Ensure transNo is provided
+    ]);
+
+    $uploadedFiles = [];
+
+    if ($request->hasFile('files')) {
+        $user = Auth::user(); // Get authenticated user
+        $userCode = $user->code ?? 'default_user'; // Get user code (fallback if null)
+        $transNo = $request->input('transNo'); // Get transaction number
+
+        foreach ($request->file('files') as $file) {
+            $originalFileName = $file->getClientOriginalName();
+            $storagePath = "uploads/{$userCode}/TransNo/{$transNo}";
+
+            // Store file in `storage/app/public/uploads/{userCode}/TransNo/{transNo}/`
+            $path = $file->storeAs($storagePath, $originalFileName, 'public');
+
+            // Save file path in database
+            $image = Image::create([
+                'user_code' => $user->code,
+                'file_path' => $path,
+                'trans_no'  => $transNo
+            ]);
+
+            // Generate public URL
+            $uploadedFiles[] = [
+                'user_code' => $image->user_code,
+                'trans_no'  => $image->trans_no,
+                'file_path' => asset("storage/" . $path) // Corrected URL format
+            ];
+        }
+    }
+
+    return response()->json([
+        'message' => 'Images uploaded successfully!',
+        'files' => $uploadedFiles
+    ], 201);
+}
+
+
     public function getImages()
     {
         $user = Auth::user(); // Get authenticated user
