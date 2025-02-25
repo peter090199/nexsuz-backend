@@ -150,7 +150,7 @@ public function uploadImages(Request $request)
             return [
                 'user_code' => $image->user_code,
                 'trans_no' => $image->trans_no,
-                'file_path' => asset("storage/" . $image->file_path) // Ensure correct path
+                'file_path' => asset("storage/" . $image->baseUrl) // Ensure correct path
             ];
         });
 
