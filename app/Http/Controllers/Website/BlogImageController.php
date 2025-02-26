@@ -134,9 +134,28 @@ public function uploadImages(Request $request)
     ], 201);
 }
 
-
     public function getImages()
     {
+        $user = Auth::user();
+        $images = Image::where('user_code', $user->code)->get();
+
+        return response()->json([
+            'message' => 'User images retrieved successfully!',
+            'images' => $images->map(function ($image) {
+                return [
+                    'user_code' => $image->user_code,
+                    'trans_no' => $image->trans_no,
+                    'file_path' => asset("storage/" . $image->file_path) // Ensure full URL
+                ];
+            }),
+        ], 200);
+    }
+
+
+
+    public function getImagesdd()
+    {
+    //
         $user = Auth::user(); // Get authenticated user
 
         // Retrieve images belonging to the authenticated user
