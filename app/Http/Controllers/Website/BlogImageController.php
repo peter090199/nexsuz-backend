@@ -134,22 +134,25 @@ public function uploadImages(Request $request)
     ], 201);
 }
 
-    public function getImages()
-    {
-        $user = Auth::user();
-        $images = Image::where('user_code', $user->code)->get();
+public function getImages()
+{
+    $user = Auth::user();
 
-        return response()->json([
-            'message' => 'User images retrieved successfully!',
-            'images' => $images->map(function ($image) {
-                return [
-                    'user_code' => $image->user_code,
-                    'trans_no' => $image->trans_no,
-                    'file_path' => asset("storage/" . $image->file_path) // Ensure full URL
-                ];
-            }),
-        ], 200);
-    }
+    // Retrieve images from database
+    $images = Image::where('user_code', $user->code)->get();
+
+    // Generate the full URL for each image
+    return response()->json([
+        'message' => 'User images retrieved successfully!',
+        'images' => $images->map(function ($image) {
+            return [
+                'user_code' => $image->user_code,
+                'trans_no' => $image->trans_no,
+                'file_path' => url("storage/" . $image->file_path) // Ensure full URL
+            ];
+        }),
+    ], 200);
+}
 
 
 
