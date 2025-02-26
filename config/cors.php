@@ -16,16 +16,16 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'], // Allow all origins (frontend can access)
+    'allowed_origins' => ['http://localhost:4200'], // Allow all origins (frontend can access)
 
     'allowed_origins_patterns' => [],
 
     'allowed_headers' => ['*'], // Allow all headers
 
-    'exposed_headers' => ['Content-Disposition'], // Allow file downloads
+    'exposed_headers' => ['*'], 
 
     'max_age' => 0,
 
-    'supports_credentials' => true, // Required if using authentication (e.g., tokens, cookies)
+    'supports_credentials' => false, // Required if using authentication (e.g., tokens, cookies)
 
 ];
