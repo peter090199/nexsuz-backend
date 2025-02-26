@@ -16,7 +16,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://localhost:4200'], // Allow all origins (frontend can access)
+    'allowed_origins' => ['https://tripidoo.com'], // Allow all origins (frontend can access)
 
     'allowed_origins_patterns' => [],
 
