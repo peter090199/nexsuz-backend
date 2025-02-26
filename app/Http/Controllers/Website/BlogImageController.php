@@ -134,7 +134,7 @@ public function uploadImages(Request $request)
     ], 201);
 }
 
-public function getImages()
+public function getImages22()
 {
     $user = Auth::user();
 
@@ -151,6 +151,29 @@ public function getImages()
                 'file_path' => url("storage/" . $image->file_path) // Ensure full URL
             ];
         }),
+    ], 200);
+}
+
+public function getImages()
+{
+    $user = Auth::user(); // Get authenticated user
+
+    // Retrieve images belonging to the authenticated user
+    $images = Image::where('user_code', $user->code)->get();
+
+    // Format response with full accessible URL
+    $formattedImages = $images->map(function ($image) {
+        return [
+            'user_code' => $image->user_code,
+            'trans_no' => $image->trans_no,
+            'file_path' => "https://exploredition.com/public/storage/" . $image->file_path
+
+        ];
+    });
+
+    return response()->json([
+        'message' => 'User images retrieved successfully!',
+        'images' => $formattedImages
     ], 200);
 }
 
