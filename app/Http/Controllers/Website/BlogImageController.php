@@ -60,7 +60,7 @@ class BlogImageController extends Controller
         ], 201);
     }
 
-    public function getAllImages()
+    public function getImages()
     {
         // Fetch all images
         $images = Image::all();
