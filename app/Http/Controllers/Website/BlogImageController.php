@@ -60,31 +60,29 @@ class BlogImageController extends Controller
         ], 201);
     }
 
-
-    public function getImages()
+    public function getAllImages()
     {
-        // Fetch all images from the database
+        // Fetch all images
         $images = Image::all();
-
+    
         if ($images->isEmpty()) {
             return response()->json(['message' => 'No images found'], 404);
         }
-
-        // Format response with public URLs
+    
+        // Convert file paths to full URLs
         $imageData = $images->map(function ($image) {
             return [
                 'user_code' => $image->user_code,
                 'trans_no'  => $image->trans_no,
-                'file_path' => asset(str_replace('public/', 'storage/', $image->file_path)) // Convert to accessible URL
+                'file_path' => asset("storage" . str_replace('public/', '', $image->file_path)) // Ensure public URL
             ];
         });
-
+    
         return response()->json([
             'message' => 'All images retrieved successfully!',
             'images' => $imageData
         ]);
     }
-
     
 
 
