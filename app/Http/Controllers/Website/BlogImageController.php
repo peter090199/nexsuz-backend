@@ -136,6 +136,8 @@ class BlogImageController extends Controller
             'files' => $uploadedFiles
         ], 201);
     }
+
+    
     public function getImagesxxxx()
     {
         $user = Auth::user();
