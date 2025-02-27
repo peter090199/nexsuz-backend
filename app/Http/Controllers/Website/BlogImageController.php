@@ -62,27 +62,28 @@ class BlogImageController extends Controller
 
     public function getImages()
     {
-        // Fetch all images
+        // Fetch all images from the database
         $images = Image::all();
-    
+
         if ($images->isEmpty()) {
             return response()->json(['message' => 'No images found'], 404);
         }
-    
-        // Convert file paths to full URLs
+
+        // Fix the file path to generate full URLs
         $imageData = $images->map(function ($image) {
             return [
                 'user_code' => $image->user_code,
                 'trans_no'  => $image->trans_no,
-                'file_path' => asset("storage" . str_replace('public/', '', $image->file_path)) // Ensure public URL
+                'file_path' => asset("storage/" . ltrim($image->file_path, '/')) // Ensure proper path
             ];
         });
-    
+
         return response()->json([
             'message' => 'All images retrieved successfully!',
             'images' => $imageData
         ]);
     }
+
     
 
 
