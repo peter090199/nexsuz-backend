@@ -34,9 +34,9 @@ class BlogImageController extends Controller
             $transNo = $request->input('transNo'); // Get transaction number
 
             foreach ($request->file('files') as $file) {
-                $uuid = Str::uuid(); // Generate unique identifier
-              //  $originalFileName = $file->getClientOriginalName();
-                $storagePath = "uploads/{$userCode}/TransNo/{$transNo}/{$uuid}";
+               // $uuid = Str::uuid(); // Generate unique identifier
+                $originalFileName = $file->getClientOriginalName();
+                $storagePath = "uploads/{$userCode}/TransNo/{$transNo}/{$originalFileName}";
 
                 // Store the file in 'storage/app/public/uploads/{userCode}/Images/{uuid}'
                 $path = $file->store($storagePath, 'public');
@@ -62,6 +62,8 @@ class BlogImageController extends Controller
             'files' => $uploadedFiles
         ], 201);
     }
+
+    
     public function getImages()
     {
         $user = Auth::user();
