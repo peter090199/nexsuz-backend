@@ -15,7 +15,7 @@ class BlogImageController extends Controller
     {
         $this->middleware('auth:sanctum'); // Require authentication
     }
-    public function uploadImages(Request $request)
+    public function uploadImageqs(Request $request)
     {
         // Validate the request
         $request->validate([
@@ -91,7 +91,7 @@ class BlogImageController extends Controller
 
 
 
-    public function uploadImagescv(Request $request)
+    public function uploadImages(Request $request)
     {
         // Validate the request
         $request->validate([
