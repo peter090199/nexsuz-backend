@@ -28,7 +28,7 @@ class BlogImageController extends Controller
 
         if ($request->hasFile('files')) {
             $user = Auth::user(); // Get authenticated user
-            $userCode = $user->code ?? 'default_user'; // Get user code (fallback if null)
+            $userCode = $user->code; // Get user code (fallback if null)
             $transNo = $request->input('transNo'); // Get transaction number
 
             foreach ($request->file('files') as $file) {
