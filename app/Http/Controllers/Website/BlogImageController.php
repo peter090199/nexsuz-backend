@@ -74,7 +74,8 @@ class BlogImageController extends Controller
             return [
                 'user_code' => $image->user_code,
                 'trans_no'  => $image->trans_no,
-                'file_path' => asset("storage/" . ltrim($image->file_path, '/')) // Ensure proper path
+                'file_path' => url("storage/" . ltrim($image->file_path, '/'))
+
             ];
         });
 
