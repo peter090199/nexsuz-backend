@@ -80,7 +80,7 @@ class BlogImageController extends Controller
     
             foreach ($request->file('files') as $file) {
                 $fileName = $file->hashName(); // Generate unique filename
-                $storagePath = "uploads/{$userCode}/TransNo/{$transNo}/default.png/{$fileName}";
+                $storagePath = "https://exploredition.com/storage/app/public/uploads/{$userCode}/TransNo/{$transNo}/default.png/{$fileName}";
     
                 // Store the file in 'storage/app/public/uploads/{userCode}/TransNo/{transNo}/default.png/{file_name}'
                 $path = $file->storeAs("public/{$storagePath}", $fileName);
