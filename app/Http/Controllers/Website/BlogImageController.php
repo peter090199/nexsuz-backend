@@ -66,10 +66,10 @@ class BlogImageController extends Controller
     public function getImages()
     {
         $user = Auth::user();
-
+    
         // Retrieve images from database
         $images = Image::where('user_code', $user->code)->get();
-
+    
         // Generate the full URL for each image
         return response()->json([
             'message' => 'User images retrieved successfully!',
@@ -77,11 +77,12 @@ class BlogImageController extends Controller
                 return [
                     'user_code' => $image->user_code,
                     'trans_no' => $image->trans_no,
-                    'file_path' => url("storage/app/public/uploads/{$image->user_code}/TransNo/{$image->trans_no}/default.png/{$image->file_path}")
+                    'file_path' =>  $image->file_path,
                 ];
             }),
         ], 200);
     }
+    
 
 
 
