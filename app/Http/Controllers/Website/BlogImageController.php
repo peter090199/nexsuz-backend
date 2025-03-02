@@ -106,7 +106,29 @@ class BlogImageController extends Controller
             'files' => $uploadedFiles
         ], 201);
     }
-    public function getImages(Request $request)
+    public function getImages()
+    {
+        $user = Auth::user(); // Get authenticated user
+    
+        // Retrieve all images associated with the user
+        $images = Image::where('user_code', $user->code)->get();
+    
+        // Format the image paths correctly
+        $imageData = $images->map(function ($image) {
+            return [
+                'id' => $image->id,
+                'trans_no' => $image->trans_no,
+                'file_path' => url("storage/app/public/{$image->file_path}"), // Generate correct URL
+            ];
+        });
+    
+        return response()->json([
+            'message' => 'All images retrieved successfully!',
+            'images' => $imageData
+        ], 200);
+    }
+    
+    public function getImagesByTransNo(Request $request)
     {
         // Validate the request
         $request->validate([
@@ -135,6 +157,8 @@ class BlogImageController extends Controller
             'images' => $imageData
         ], 200);
     }
+
+
 
     public function getImagesxx()
     {
