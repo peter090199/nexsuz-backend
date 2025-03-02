@@ -257,28 +257,63 @@ class BlogImageController extends Controller
             'images' => $imageData
         ], 200);
     }
-    
     public function getImages()
-{
-    $user = Auth::user();
+    {
+        try {
+            // Fetch all images from the database
+            $images = Image::all(['file_path']);
 
-    // Retrieve all images for the authenticated user
-    $images = Image::where('user_code', $user->code)->get();
+            // If no images are found, return a message
+            if ($images->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No images found.',
+                ], 404);
+            }
 
-    // Format URLs correctly
-    $imageData = $images->map(function ($image) {
-        return [
-            'id' => $image->id,
-            'trans_no' => $image->trans_no,
-            'file_path' => asset("{$image->file_path}") // ✅ Correct Laravel storage path
-        ];
-    });
+            // Convert file paths to full URLs
+            $imageUrls = $images->map(function ($image) {
+                return asset("storage/{$image->file_path}");
+            });
 
-    return response()->json([
-        'message' => 'All images retrieved successfully!',
-        'images' => $imageData
-    ], 200);
-}
+            return response()->json([
+                'success' => true,
+                'message' => 'All images retrieved successfully!',
+                'images' => $imageUrls
+            ], 200);
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred: ' . $th->getMessage(),
+            ], 500);
+        }
+    }
+
+
+
+
+//     public function getImages()
+// {
+//     $user = Auth::user();
+
+//     // Retrieve all images for the authenticated user
+//     $images = Image::where('user_code', $user->code)->get();
+
+//     // Format URLs correctly
+//     $imageData = $images->map(function ($image) {
+//         return [
+//             'id' => $image->id,
+//             'trans_no' => $image->trans_no,
+//             'file_path' => asset("{$image->file_path}") // ✅ Correct Laravel storage path
+//         ];
+//     });
+
+//     return response()->json([
+//         'message' => 'All images retrieved successfully!',
+//         'images' => $imageData
+//     ], 200);
+// }
 
     public function getImagesByTransNo(Request $request)
     {
