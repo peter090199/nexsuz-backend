@@ -190,7 +190,7 @@ class BlogImageController extends Controller
         return [
             'id' => $image->id,
             'trans_no' => $image->trans_no,
-            'file_path' => asset("storage/{$image->file_path}") // ✅ Correct Laravel storage path
+            'file_path' => asset("{$image->file_path}") // ✅ Correct Laravel storage path
         ];
     });
 
