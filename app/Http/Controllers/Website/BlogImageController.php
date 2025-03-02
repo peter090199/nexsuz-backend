@@ -144,7 +144,7 @@ class BlogImageController extends Controller
                 return response()->json([
                     'success' => false,
                     'message' => 'No images found.',
-                ], 404);
+                ], 201);
             }
 
             // Convert file paths to full URLs
@@ -200,10 +200,10 @@ class BlogImageController extends Controller
     
     public function delete_blogImage($id)
     {
-        
+
         try {
             if (!Auth::check()) {
-                return response()->json(['error' => 'Unauthorized: User not authenticated'], 401);
+                return response()->json(['error' => 'Unauthorized: User not authenticated'], 200);
             }
 
             $data = Image::where('id', $id)->first();
