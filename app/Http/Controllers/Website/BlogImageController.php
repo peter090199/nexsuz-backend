@@ -197,25 +197,24 @@ class BlogImageController extends Controller
         ], 200);
     }
 
-
     public function deleteImageById($id)
     {
         try {
             $image = Image::find($id);
-
+    
             if (!$image) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Image not found.'
                 ], 404);
             }
-
-            // Delete the image file from storage if necessary
+    
+            // Optional: Delete the image from storage
             Storage::delete('public/' . $image->file_path);
-
-            // Delete from the database
+    
+            // Delete from database
             $image->delete();
-
+    
             return response()->json([
                 'success' => true,
                 'message' => 'Image deleted successfully.'
@@ -227,7 +226,7 @@ class BlogImageController extends Controller
             ], 500);
         }
     }
-
+    
 
     public function deleteImageByIdx(Request $request)
     {
