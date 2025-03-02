@@ -17,6 +17,51 @@ class BlogImageController extends Controller
     }
 
 
+    // public function uploadImages(Request $request)
+    // {
+    //     // Validate the request
+    //     $request->validate([
+    //         'files' => 'required|array', // Ensure files is an array
+    //         'files.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Validate each file
+    //         'transNo' => 'required|string' // Ensure transNo is provided
+    //     ]);
+
+    //     $uploadedFiles = [];
+
+    //     if ($request->hasFile('files')) {
+    //         $user = Auth::user(); // Get authenticated user
+    //         $userCode = $user->code ?? 'default_user'; // Get user code (fallback if null)
+    //         $transNo = $request->input('transNo'); // Get transaction number
+
+    //         foreach ($request->file('files') as $file) {
+    //            // $uuid = Str::uuid(); // Generate unique identifier
+    //             $originalFileName = $file->getClientOriginalName();
+    //             $storagePath = "uploads/{$userCode}/TransNo/{$transNo}/{$originalFileName}";
+
+    //             // Store the file in 'storage/app/public/uploads/{userCode}/Images/{uuid}'
+    //             $path = $file->store($storagePath, 'public');
+
+    //             // Save file path and transNo in the database
+    //             $image = Image::create([
+    //                 'user_code' => $user->code, // Associate image with authenticated user
+    //                 'file_path' => $path, // Store the correct path
+    //                 'trans_no'  => $transNo // Store transaction number
+    //             ]);
+
+    //             // Append the image data with full accessible URL
+    //             $uploadedFiles[] = [
+    //                 'user_code' => $image->user_code,
+    //                 'trans_no'  => $image->trans_no,
+    //                 'file_path' => asset("storage/{$path}") // Generate public URL
+    //             ];
+    //         }
+    //     }
+
+    //     return response()->json([
+    //         'message' => 'Images uploaded successfully!',
+    //         'files' => $uploadedFiles
+    //     ], 201);
+    // }
     public function uploadImages(Request $request)
     {
         // Validate the request
@@ -25,44 +70,43 @@ class BlogImageController extends Controller
             'files.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Validate each file
             'transNo' => 'required|string' // Ensure transNo is provided
         ]);
-
+    
         $uploadedFiles = [];
-
+    
         if ($request->hasFile('files')) {
             $user = Auth::user(); // Get authenticated user
             $userCode = $user->code ?? 'default_user'; // Get user code (fallback if null)
             $transNo = $request->input('transNo'); // Get transaction number
-
+    
             foreach ($request->file('files') as $file) {
-               // $uuid = Str::uuid(); // Generate unique identifier
-                $originalFileName = $file->getClientOriginalName();
-                $storagePath = "uploads/{$userCode}/TransNo/{$transNo}/{$originalFileName}";
-
-                // Store the file in 'storage/app/public/uploads/{userCode}/Images/{uuid}'
-                $path = $file->store($storagePath, 'public');
-
+                $fileName = $file->hashName(); // Generate unique filename
+                $storagePath = "uploads/{$userCode}/TransNo/{$transNo}/default.png/{$fileName}";
+    
+                // Store the file in 'storage/app/public/uploads/{userCode}/TransNo/{transNo}/default.png/{file_name}'
+                $path = $file->storeAs("public/{$storagePath}", $fileName);
+    
                 // Save file path and transNo in the database
                 $image = Image::create([
                     'user_code' => $user->code, // Associate image with authenticated user
-                    'file_path' => $path, // Store the correct path
+                    'file_path' => $storagePath, // Store the correct path
                     'trans_no'  => $transNo // Store transaction number
                 ]);
-
+    
                 // Append the image data with full accessible URL
                 $uploadedFiles[] = [
                     'user_code' => $image->user_code,
                     'trans_no'  => $image->trans_no,
-                    'file_path' => asset("storage/{$path}") // Generate public URL
+                    'file_path' => url("storage/app/public/{$storagePath}") // Generate correct public URL
                 ];
             }
         }
-
+    
         return response()->json([
             'message' => 'Images uploaded successfully!',
             'files' => $uploadedFiles
         ], 201);
     }
-
+    
     public function getImages()
     {
         $user = Auth::user();
