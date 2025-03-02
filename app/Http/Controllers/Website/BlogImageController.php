@@ -118,7 +118,7 @@ class BlogImageController extends Controller
             return [
                 'id' => $image->id,
                 'trans_no' => $image->trans_no,
-                'file_path' => url("storage/app/public/{$image->file_path}"), // Generate correct URL
+                'file_path' => url("{$image->file_path}"), // Generate correct URL
             ];
         });
     
