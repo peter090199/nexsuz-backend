@@ -197,7 +197,42 @@ class BlogImageController extends Controller
         ], 200);
     }
 
-    public function deleteImageById($id)
+    
+    public function delete_blogImage($id)
+    {
+        
+        try {
+            if (!Auth::check()) {
+                return response()->json(['error' => 'Unauthorized: User not authenticated'], 401);
+            }
+
+            $data = Image::where('id', $id)->first();
+
+            if (!$data) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'id not found'
+                ], 404);
+            }
+
+            $data->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => "Image '{$id}' deleted successfully!"
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Something went wrong!',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+    public function deleteImageByIdcc($id)
     {
         try {
             $image = Image::find($id);
