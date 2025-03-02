@@ -257,6 +257,7 @@ class BlogImageController extends Controller
             'images' => $imageData
         ], 200);
     }
+
     public function getImages()
     {
         try {
@@ -273,7 +274,7 @@ class BlogImageController extends Controller
 
             // Convert file paths to full URLs
             $imageUrls = $images->map(function ($image) {
-                return asset("storage/{$image->file_path}");
+                return asset("storage/app/public/{$image->file_path}");
             });
 
             return response()->json([
