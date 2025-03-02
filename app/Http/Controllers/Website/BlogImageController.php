@@ -95,7 +95,7 @@ class BlogImageController extends Controller
             ]);
         }
     }
-    
+
     public function getImages()
     {
         try {
@@ -198,7 +198,38 @@ class BlogImageController extends Controller
     }
 
 
-    public function deleteImageById(Request $request)
+    public function deleteImageById($id)
+    {
+        try {
+            $image = Image::find($id);
+
+            if (!$image) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Image not found.'
+                ], 404);
+            }
+
+            // Delete the image file from storage if necessary
+            Storage::delete('public/' . $image->file_path);
+
+            // Delete from the database
+            $image->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Image deleted successfully.'
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred: ' . $th->getMessage(),
+            ], 500);
+        }
+    }
+
+
+    public function deleteImageByIdx(Request $request)
     {
         // Validate the request to ensure 'id' is provided
         $request->validate([
