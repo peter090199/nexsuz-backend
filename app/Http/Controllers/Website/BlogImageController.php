@@ -143,9 +143,37 @@ class BlogImageController extends Controller
     //     ], 201);
     // }
 
-
-
     public function getImages()
+    {
+        try {
+            $images = Image::pluck('file_path'); // Get only file paths
+    
+            if ($images->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No images found.',
+                ], 404);
+            }
+    
+            // Convert relative file paths to full URLs dynamically
+            $imageUrls = $images->map(fn($path) => asset("storage/{$path}"));
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'All images retrieved successfully!',
+                'images' => $imageUrls
+            ], 200);
+    
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred: ' . $th->getMessage(),
+            ], 500);
+        }
+    }
+    
+
+    public function getImagess()
     {
         try {
             // Fetch all images from the database
