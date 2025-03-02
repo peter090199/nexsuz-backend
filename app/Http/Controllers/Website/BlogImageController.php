@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\Image;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
 
 class BlogImageController extends Controller
 {
