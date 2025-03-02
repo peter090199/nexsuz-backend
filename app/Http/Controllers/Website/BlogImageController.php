@@ -19,6 +19,84 @@ class BlogImageController extends Controller
 
     public function uploadImages(Request $request)
     {
+        $data = $request->all();
+
+        // Validate file input
+        $validator = Validator::make($data, [
+            'files' => 'required|array',
+            'files.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'transNo' => 'required|string'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->all(),
+            ]);
+        }
+
+        if (!$request->hasFile('files')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No file was uploaded.',
+            ]);
+        }
+
+        try {
+            DB::beginTransaction(); // Start the transaction
+
+            $user = Auth::user();
+            $userCode = $user->code ?? 'default_user'; // Fallback for user code
+            $transNo = $request->input('transNo');
+            $uploadedFiles = [];
+
+            foreach ($request->file('files') as $file) {
+                $uuid = Str::uuid(); // Generate unique identifier
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $folderPath = "uploads/{$userCode}/TransNo/{$transNo}/{$uuid}";
+
+                // Store the file in 'storage/app/public/uploads/{userCode}/TransNo/{transNo}/{uuid}'
+                $photoPath = $file->storeAs($folderPath, $fileName, 'public');
+
+                // Construct the full file URL
+                $photoUrl = asset(Storage::url($photoPath));
+
+                // Save file path and transNo in the database
+                $image = Image::create([
+                    'user_code' => $user->code,
+                    'file_path' => $photoPath, // Store relative path
+                    'trans_no'  => $transNo
+                ]);
+
+                // Append the image data with full accessible URL
+                $uploadedFiles[] = [
+                    'user_code' => $image->user_code,
+                    'trans_no'  => $image->trans_no,
+                    'file_path' => $photoUrl // Generate correct public URL
+                ];
+            }
+
+            DB::commit(); // Commit the transaction
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Images uploaded successfully!',
+                'files' => $uploadedFiles
+            ], 201);
+
+        } catch (\Throwable $th) {
+            DB::rollBack(); // Rollback transaction on error
+
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred: ' . $th->getMessage(),
+            ]);
+        }
+    }
+
+    
+    public function uploadImagescc(Request $request)
+    {
         // Validate the request
         $request->validate([
             'files' => 'required|array', // Ensure files is an array
@@ -40,7 +118,7 @@ class BlogImageController extends Controller
 
                 // Store the file in 'storage/app/public/uploads/{userCode}/Images/{uuid}'
                 $path = $file->store($storagePath, 'public');
-
+             //   https://red-anteater-382469.hostingersite.com/storage/app/public/uploads/DEFAULTPROFILE/DEFAULTPROFILE.png'  ,
                 // Save file path and transNo in the database
                 $image = Image::create([
                     'user_code' => $user->code, // Associate image with authenticated user
