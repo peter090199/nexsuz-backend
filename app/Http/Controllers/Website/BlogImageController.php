@@ -186,7 +186,7 @@ class BlogImageController extends Controller
     
             // Delete the file from storage
             Storage::disk('public')->delete($image->file_path);
-            
+    
             // Delete the database record
             $image->delete();
     
