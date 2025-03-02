@@ -94,7 +94,7 @@ class BlogImageController extends Controller
         }
     }
 
-    
+
     public function uploadImagescc(Request $request)
     {
         // Validate the request
