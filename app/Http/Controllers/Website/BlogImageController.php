@@ -95,9 +95,45 @@ class BlogImageController extends Controller
             ]);
         }
     }
-
-
+    
     public function getImages()
+    {
+        try {
+            // Fetch all images from the database
+            $images = Image::all(['id', 'file_path']);
+    
+            // If no images are found, return a message
+            if ($images->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No images found.',
+                ], 404);
+            }
+    
+            // Convert file paths to full URLs and include the ID
+            $imageData = $images->map(function ($image) {
+                return [
+                    'id' => $image->id,
+                    'url' => asset("https://exploredition.com/storage/app/public/{$image->file_path}")
+                ];
+            });
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'All images retrieved successfully!',
+                'images' => $imageData
+            ], 200);
+    
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred: ' . $th->getMessage(),
+            ], 500);
+        }
+    }
+    
+
+    public function getImagesxx()
     {
         try {
             // Fetch all images from the database
