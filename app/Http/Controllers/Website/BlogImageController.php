@@ -156,7 +156,7 @@ class BlogImageController extends Controller
 
 
 
-    public function getImages()
+    public function getImagesss()
     {
         $user = Auth::user(); // Get authenticated user
     
@@ -178,6 +178,28 @@ class BlogImageController extends Controller
         ], 200);
     }
     
+    public function getImages()
+{
+    $user = Auth::user();
+
+    // Retrieve all images for the authenticated user
+    $images = Image::where('user_code', $user->code)->get();
+
+    // Format URLs correctly
+    $imageData = $images->map(function ($image) {
+        return [
+            'id' => $image->id,
+            'trans_no' => $image->trans_no,
+            'file_path' => asset("storage/{$image->file_path}") // ✅ Correct Laravel storage path
+        ];
+    });
+
+    return response()->json([
+        'message' => 'All images retrieved successfully!',
+        'images' => $imageData
+    ], 200);
+}
+
     public function getImagesByTransNo(Request $request)
     {
         // Validate the request
