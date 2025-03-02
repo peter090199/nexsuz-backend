@@ -106,8 +106,37 @@ class BlogImageController extends Controller
             'files' => $uploadedFiles
         ], 201);
     }
-    
-    public function getImages()
+    public function getImages(Request $request)
+    {
+        // Validate the request
+        $request->validate([
+            'transNo' => 'required|string' // Ensure transNo is provided
+        ]);
+
+        $transNo = $request->input('transNo'); // Get transaction number
+        $user = Auth::user(); // Get authenticated user
+
+        // Retrieve images associated with the transaction number and user
+        $images = Image::where('user_code', $user->code)
+                    ->where('trans_no', $transNo)
+                    ->get();
+
+        // Format the image paths correctly
+        $imageData = $images->map(function ($image) {
+            return [
+                'id' => $image->id,
+                'trans_no' => $image->trans_no,
+                'file_path' => url("storage/app/public/{$image->file_path}"), // Generate correct URL
+            ];
+        });
+
+        return response()->json([
+            'message' => 'Images retrieved successfully!',
+            'images' => $imageData
+        ], 200);
+    }
+
+    public function getImagesxx()
     {
         $user = Auth::user();
     
