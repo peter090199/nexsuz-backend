@@ -107,7 +107,7 @@ class BlogImageController extends Controller
                 return response()->json([
                     'success' => false,
                     'message' => 'No images found.',
-                ], 404);
+                ], 201);
             }
     
             // Convert file paths to full URLs and include the ID
