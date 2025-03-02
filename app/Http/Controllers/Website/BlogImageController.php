@@ -161,7 +161,7 @@ class BlogImageController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'All images retrieved successfully!',
-                'images' => $imageUrls
+                'images' => url($imageUrls)
             ], 200);
     
         } catch (\Throwable $th) {
