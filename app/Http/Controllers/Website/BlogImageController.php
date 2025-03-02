@@ -274,7 +274,7 @@ class BlogImageController extends Controller
 
             // Convert file paths to full URLs
             $imageUrls = $images->map(function ($image) {
-                return asset("storage/app/public/{$image->file_path}");
+                return asset("https://exploredition.com/storage/app/public/{$image->file_path}");
             });
 
             return response()->json([
