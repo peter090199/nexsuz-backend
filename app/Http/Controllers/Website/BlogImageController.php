@@ -143,7 +143,7 @@ class BlogImageController extends Controller
                 $uploadedFiles[] = [
                     'user_code' => $image->user_code,
                     'trans_no'  => $image->trans_no,
-                    'file_path' => asset("storage/{$filePath}") // Generate correct public URL
+                    'file_path' => $image->$filePath // Generate correct public URL
                 ];
             }
         }
