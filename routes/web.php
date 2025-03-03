@@ -17,9 +17,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Route::get('/uploads/{path}', function ($path) {
-//     return response()->file(storage_path('app/uploads/' . $path));
-// })->where('path', '.*');
+Route::get('/uploads/{path}', function ($path) {
+    return response()->file(storage_path('app/uploads/' . $path));
+})->where('path', '.*');
 
 // Route::resource('profiles',ProfileController::class)->names('profiles');
 
