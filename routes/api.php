@@ -75,7 +75,7 @@ Route::post('accountactivation',[RegisterController::class,'accountactivation'])
 //public
 // Route::get('getPublicImages', [BlogImageController::class, 'getImages']);
 
-Route::get('getPublicImages', [ImageController::class, 'getImages'])->withoutMiddleware(['auth:api']);
+Route::get('getPublicImages', [ImageController::class, 'getImagesPublic'])->withoutMiddleware(['auth:api']);
 
 Route::middleware(['auth:sanctum','checkstatus'])->group(function () {
     Route::get('/user', function (Request $request) {
