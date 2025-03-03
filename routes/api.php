@@ -72,6 +72,8 @@ Route::post('accountactivation',[RegisterController::class,'accountactivation'])
 
     Route::get('get_contact', [ContactController::class, 'get_contact']);
 });
+//public
+Route::get('getPublicImages', [BlogImageController::class, 'getImages']);
 
 
 Route::middleware(['auth:sanctum','checkstatus'])->group(function () {
