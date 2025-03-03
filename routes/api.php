@@ -71,11 +71,13 @@ Route::post('accountactivation',[RegisterController::class,'accountactivation'])
     Route::get('getAbout', [ModuleTask::class, 'getAbout']);
 
     Route::get('get_contact', [ContactController::class, 'get_contact']);
+
+    Route::get('getPublicImages', [BlogImageController::class, 'getImages']);
 });
 //public
-// Route::get('getPublicImages', [BlogImageController::class, 'getImages']);
 
-Route::get('getPublicImages', [ImageController::class, 'getImagesPublic'])->withoutMiddleware(['auth:api']);
+
+// Route::get('getPublicImages', [ImageController::class, 'getImagesPublic'])->withoutMiddleware(['auth:api']);
 
 Route::middleware(['auth:sanctum','checkstatus'])->group(function () {
     Route::get('/user', function (Request $request) {
