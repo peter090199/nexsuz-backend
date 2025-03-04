@@ -13,10 +13,10 @@ use Illuminate\Support\Facades\DB;
 
 class BlogImageController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth:sanctum'); // Require authentication
-    }
+    // public function __construct()
+    // {
+    //     $this->middleware('auth:sanctum'); // Require authentication
+    // }
 
 
     public function uploadImages(Request $request)
