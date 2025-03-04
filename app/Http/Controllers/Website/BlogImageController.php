@@ -95,6 +95,8 @@ class BlogImageController extends Controller
             ]);
         }
     }
+
+    
     public function getImagesPublic()
     {
         try {
@@ -127,6 +129,8 @@ class BlogImageController extends Controller
             ], 500);
         }
     }
+
+
     public function getImages()
     {
         try {

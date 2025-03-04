@@ -72,10 +72,10 @@ Route::post('accountactivation',[RegisterController::class,'accountactivation'])
 
     Route::get('get_contact', [ContactController::class, 'get_contact']);
 
-    Route::get('getPublicImages', [BlogImageController::class, 'getImages']);
+   
 });
 //public
-
+Route::get('getImagesPublic', [BlogImageController::class, 'getImagesPublic']);
 
 // Route::get('getPublicImages', [ImageController::class, 'getImagesPublic'])->withoutMiddleware(['auth:api']);
 
