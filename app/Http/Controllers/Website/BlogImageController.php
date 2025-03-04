@@ -168,38 +168,42 @@ class BlogImageController extends Controller
     }
     
 
-    public function getImagesxx()
-    {
-        try {
-            // Fetch all images from the database
-            $images = Image::all(['file_path']);
-
-            // If no images are found, return a message
-            if ($images->isEmpty()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'No images found.',
-                ], 201);
-            }
-
-            // Convert file paths to full URLs
-            $imageUrls = $images->map(function ($image) {
-                return asset("https://exploredition.com/storage/app/public/{$image->file_path}");
-            });
-
-            return response()->json([
-                'success' => true,
-                'message' => 'All images retrieved successfully!',
-                'images' => $imageUrls
-            ], 200);
-
-        } catch (\Throwable $th) {
-            return response()->json([
-                'success' => false,
-                'message' => 'An error occurred: ' . $th->getMessage(),
-            ], 500);
-        }
-    }
+    // public function getImages()
+    // {
+    //     try {
+    //         // Fetch all images from the database
+    //         $images = Image::all(['id', 'file_path']);
+    
+    //         // If no images are found, return a message
+    //         if ($images->isEmpty()) {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'message' => 'No images found.',
+    //             ], 201);
+    //         }
+    
+    //         // Convert file paths to full URLs and include the ID
+    //         $imageData = $images->map(function ($image) {
+    //             return [
+    //                 'id' => $image->id,
+    //                 'url' => asset("http://127.0.0.1:8000/storage/app/public/{$image->file_path}")
+    //             ];
+    //         });
+    
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'All images retrieved successfully!',
+    //             'images' => $imageData
+    //         ], 200);
+    
+    //     } catch (\Throwable $th) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'An error occurred: ' . $th->getMessage(),
+    //         ], 500);
+    //     }
+    // }
+    
 
 
     public function getImagesByTransNo(Request $request)
@@ -267,81 +271,6 @@ class BlogImageController extends Controller
     }
 
 
-    public function deleteImageByIdcc($id)
-    {
-        try {
-            $image = Image::find($id);
-    
-            if (!$image) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Image not found.'
-                ], 404);
-            }
-    
-            // Optional: Delete the image from storage
-            Storage::delete('public/' . $image->file_path);
-    
-            // Delete from database
-            $image->delete();
-    
-            return response()->json([
-                'success' => true,
-                'message' => 'Image deleted successfully.'
-            ], 200);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'success' => false,
-                'message' => 'An error occurred: ' . $th->getMessage(),
-            ], 500);
-        }
-    }
-    
-
-    public function deleteImageByIdx(Request $request)
-    {
-        // Validate the request to ensure 'id' is provided
-        $request->validate([
-            'id' => 'required|integer|exists:images,id' // Ensure id exists in the images table
-        ]);
-        
-        try {
-            DB::beginTransaction(); // Start transaction
-    
-            $user = Auth::user(); // Get authenticated user
-            $image = Image::where('id', $request->id)
-                          ->where('user_code', $user->code) // Ensure the user owns the image
-                          ->first();
-    
-            if (!$image) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Image not found or access denied.'
-                ], 404);
-            }
-    
-            // Delete the file from storage
-            Storage::disk('public')->delete($image->file_path);
-    
-            // Delete the database record
-            $image->delete();
-    
-            DB::commit(); // Commit transaction
-    
-            return response()->json([
-                'success' => true,
-                'message' => 'Image deleted successfully!'
-            ], 200);
-    
-        } catch (\Throwable $th) {
-            DB::rollBack(); // Rollback transaction on error
-    
-            return response()->json([
-                'success' => false,
-                'message' => 'An error occurred: ' . $th->getMessage(),
-            ], 500);
-        }
-    }
     
 
 }
