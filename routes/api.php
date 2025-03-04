@@ -71,8 +71,7 @@ Route::post('accountactivation',[RegisterController::class,'accountactivation'])
     Route::get('getAbout', [ModuleTask::class, 'getAbout']);
 
     Route::get('get_contact', [ContactController::class, 'get_contact']);
-    Route::get('getImagesPublic', [BlogImageController::class, 'getImagesPublic']);
-   
+ 
 });
 //public
 // Route::get('getImagesPublic', [BlogImageController::class, 'getImagesPublic']);
