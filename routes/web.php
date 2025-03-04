@@ -23,4 +23,4 @@ Route::get('/uploads/{path}', function ($path) {
 
 // Route::resource('profiles',ProfileController::class)->names('profiles');
 
-// Route::resource('profiles',ProfilepictureController::class)->names('profiles');
+Route::resource('profiles',ProfilepictureController::class)->names('profiles');
