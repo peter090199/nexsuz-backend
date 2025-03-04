@@ -56,25 +56,19 @@ Route::post('accountactivation',[RegisterController::class,'accountactivation'])
 
     // Route to create a new module
     Route::post('create', [WebsiteModule::class, 'createModule']);
-
     // Route to get all modules
     Route::get('all', [WebsiteModule::class, 'getAllModules']);
-
     // Route to edit a module by transNo
     Route::put('edit/{transNo}', [WebsiteModule::class, 'editModule']);
-
     // Route to delete a module by transNo
     Route::delete('delete/{transNo}', [WebsiteModule::class, 'deleteModule']);
-
     Route::get('allModules', [MenuItemController::class, 'getAllModules']);
-
     Route::get('getAbout', [ModuleTask::class, 'getAbout']);
-
     Route::get('get_contact', [ContactController::class, 'get_contact']);
- 
+    Route::get('getImagesPublic', [BlogImageController::class, 'getImagesPublic']);
 });
 //public
-Route::get('getImagesPublic', [BlogImageController::class, 'getImagesPublic']);
+
 
 
 
