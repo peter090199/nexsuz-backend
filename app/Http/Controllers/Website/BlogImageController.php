@@ -113,7 +113,7 @@ class BlogImageController extends Controller
             $imageData = $images->map(function ($image) {
                 return [
                     'id' => $image->id,
-                    'url' => Storage::url($image->file_path) // Correct local storage path
+                    'url' => asset("https://exploredition.com/storage/app/public/{$image->file_path}")
                 ];
             });
 
