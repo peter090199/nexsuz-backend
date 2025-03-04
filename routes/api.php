@@ -74,7 +74,7 @@ Route::post('accountactivation',[RegisterController::class,'accountactivation'])
  
 });
 //public
-// Route::get('getImagesPublic', [BlogImageController::class, 'getImagesPublic']);
+Route::get('get_images', [BlogImageController::class, 'getImages']);
 
 
 

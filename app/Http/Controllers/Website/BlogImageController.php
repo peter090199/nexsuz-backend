@@ -96,8 +96,42 @@ class BlogImageController extends Controller
         }
     }
 
-    
     public function getImagesPublic()
+    {
+        try {
+            // Fetch all images from the database
+            $images = Image::all(['id', 'file_path']);
+
+            if ($images->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No images found.',
+                ], 201);
+            }
+
+            // Convert file paths to full URLs
+            $imageData = $images->map(function ($image) {
+                return [
+                    'id' => $image->id,
+                    'url' => Storage::url($image->file_path) // Correct local storage path
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'message' => 'All images retrieved successfully!',
+                'images' => $imageData
+            ], 200);
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred: ' . $th->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function getImagesPubliccc()
     {
         try {
             $images = Image::all(['id', 'file_path']);
@@ -166,43 +200,6 @@ class BlogImageController extends Controller
             ], 500);
         }
     }
-    
-
-    // public function getImages()
-    // {
-    //     try {
-    //         // Fetch all images from the database
-    //         $images = Image::all(['id', 'file_path']);
-    
-    //         // If no images are found, return a message
-    //         if ($images->isEmpty()) {
-    //             return response()->json([
-    //                 'success' => false,
-    //                 'message' => 'No images found.',
-    //             ], 201);
-    //         }
-    
-    //         // Convert file paths to full URLs and include the ID
-    //         $imageData = $images->map(function ($image) {
-    //             return [
-    //                 'id' => $image->id,
-    //                 'url' => asset("http://127.0.0.1:8000/storage/app/public/{$image->file_path}")
-    //             ];
-    //         });
-    
-    //         return response()->json([
-    //             'success' => true,
-    //             'message' => 'All images retrieved successfully!',
-    //             'images' => $imageData
-    //         ], 200);
-    
-    //     } catch (\Throwable $th) {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'An error occurred: ' . $th->getMessage(),
-    //         ], 500);
-    //     }
-    // }
     
 
 
