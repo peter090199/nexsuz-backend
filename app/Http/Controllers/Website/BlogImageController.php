@@ -17,12 +17,12 @@ class BlogImageController extends Controller
     public function saveOrUpdateImages(Request $request)
     {
         $validated = $request->all();
-    
+
         // Decode JSON string to an array if needed
         if ($request->has('stats') && is_string($request->stats)) {
             $validated['stats'] = json_decode($request->stats, true);
         }
-    
+
         // Validate input fields
         $validator = Validator::make($validated, [
             'files' => 'nullable|array',
@@ -35,7 +35,7 @@ class BlogImageController extends Controller
             'stats.*.value' => 'required|string',
             'stats.*.label' => 'required|string',
         ]);
-    
+
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
@@ -43,17 +43,17 @@ class BlogImageController extends Controller
                 'errors' => $validator->errors()
             ]);
         }
-    
+
         try {
             DB::beginTransaction();
-    
+
             $user = Auth::user();
             $transNo = $validated['transNo'];
             $title = $validated['title'];
             $description = $validated['description'];
             $stats = $validated['stats'];
             $transCode = $validated['transCode'] ?? null;
-    
+
             if ($transCode) {
                 // Update existing record
                 DB::table('images')->where('transCode', $transCode)->update([
@@ -63,10 +63,17 @@ class BlogImageController extends Controller
                 ]);
                 DB::table('stats')->where('transCode', $transCode)->delete();
             } else {
+                // Delete the last transCode before creating a new one
                 $lastTransCode = DB::table('images')->max('transCode');
-                $transCode = empty($lastTransCode) ? 1 : $lastTransCode + 1;
+                if ($lastTransCode) {
+                    DB::table('images')->where('transCode', $lastTransCode)->delete();
+                    DB::table('stats')->where('transCode', $lastTransCode)->delete();
+                }
+
+                // Create new transCode
+                $transCode = $lastTransCode ? $lastTransCode + 1 : 1;
             }
-    
+
             foreach ($stats as $stat) {
                 DB::table('stats')->insert([
                     'user_code' => $user->code,
@@ -78,7 +85,7 @@ class BlogImageController extends Controller
                     'updated_at' => now(),
                 ]);
             }
-    
+
             $uploadedFiles = [];
             if ($request->hasFile('files')) {
                 foreach ($request->file('files') as $file) {
@@ -86,7 +93,7 @@ class BlogImageController extends Controller
                     $fileName = time() . '_' . $file->getClientOriginalName();
                     $folderPath = "uploads/{$user->code}/TransNo/{$transNo}/{$uuid}";
                     $photoPath = $file->storeAs($folderPath, $fileName, 'public');
-    
+
                     $image = Image::create([
                         'user_code' => $user->code,
                         'file_path' => $photoPath,
@@ -95,7 +102,7 @@ class BlogImageController extends Controller
                         'title' => $title,
                         'description' => $description,
                     ]);
-    
+
                     $uploadedFiles[] = [
                         'user_code' => $image->user_code,
                         'trans_no' => $image->trans_no,
@@ -103,20 +110,21 @@ class BlogImageController extends Controller
                     ];
                 }
             }
-    
+
             DB::commit();
             return response()->json([
                 'success' => true,
                 'message' => $request->has('transCode') ? 'Updated successfully!' : 'Saved successfully!',
                 'files' => $uploadedFiles,
             ], 201);
-    
+
         } catch (\Throwable $th) {
             DB::rollBack();
             return response()->json(['success' => false, 'message' => $th->getMessage()]);
         }
     }
     
+
     public function uploadImages(Request $request)
     {
         $data = $request->all();
