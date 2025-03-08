@@ -290,7 +290,7 @@ class BlogImageController extends Controller
                     'message' => 'No images found.',
                 ], 201);
             }
-    
+         
             // Convert file paths to full URLs and include the ID
             $imageData = $images->map(function ($image) {
                 return [
@@ -298,9 +298,10 @@ class BlogImageController extends Controller
                     'transCode' => $image->transCode,
                     'title' => $image->title,
                     'description' => $image->description,
-                    'url' => url("storage/{$image->file_path}") // Correct URL format
+                    'url' => asset("https://exploredition.com/storage/app/public/{$image->file_path}")
                 ];
             });
+            
             
             return response()->json([
                 'success' => true,
