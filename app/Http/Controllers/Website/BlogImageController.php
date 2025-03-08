@@ -281,7 +281,7 @@ class BlogImageController extends Controller
     {
         try {
             // Fetch all images from the database
-            $images = Image::all(['id', 'file_path']);
+            $images = Image::all(['id','transCode', 'file_path']);
     
             // If no images are found, return a message
             if ($images->isEmpty()) {
@@ -295,6 +295,7 @@ class BlogImageController extends Controller
             $imageData = $images->map(function ($image) {
                 return [
                     'id' => $image->id,
+                    'transCode' =>$transCode->transCode,
                     'url' => asset("https://exploredition.com/storage/app/public/{$image->file_path}")
                 ];
             });
