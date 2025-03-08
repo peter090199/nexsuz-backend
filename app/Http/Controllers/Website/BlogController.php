@@ -75,43 +75,33 @@ class BlogController extends Controller
         }
     }
     
-    public function get_blogByPublic(Request $request)
+    public function get_blogByPublic()
     {
         try {
-            if ($request->filled('transNo')) {
-                $blog = Blog::where('transNo', $request->transNo)->firstOrFail();
-
+            // Fetch all images with transCode
+            $data = Blog::all(['blog_title', 'description']);
+    
+            if ($data->isEmpty()) {
                 return response()->json([
-                    'success' => true,
-                    'data' => $this->filterContactData($blog)
-                ], 200);
+                    'success' => false,
+                    'message' => 'No data found.',
+                ], 201);
             }
-
-            // Fetch all records
-            $data = Blog::all()->map(fn($item) => $this->filterContactData($item));
-
             return response()->json([
                 'success' => true,
+                'message' => 'Get blog data successfully!',
                 'data' => $data
             ], 200);
-
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+    
+        } catch (\Throwable $th) {
             return response()->json([
                 'success' => false,
-                'error' => 'Not Found',
-                'message' => "No record found for TransNo '{$request->transNo}'."
-            ], 404);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'error' => 'Something went wrong!',
-                'message' => $e->getMessage()
+                'message' => 'An error occurred: ' . $th->getMessage(),
             ], 500);
         }
     }
-
     
-
+    
     public function get_blogByRole(Request $request)
     {
         try {
