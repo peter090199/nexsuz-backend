@@ -134,7 +134,7 @@ Route::middleware(['auth:sanctum','checkstatus'])->group(function () {
     Route::post('upload_images', [BlogImageController::class, 'uploadImages']);
     Route::get('get_images', [BlogImageController::class, 'getImages']);
     Route::delete('delete_blogImage/{id}', [BlogImageController::class, 'delete_blogImage']);
-
+    Route::delete('deleteByTransCode/{transCode}', [BlogImageController::class, 'deleteByTransCode']);
 
     
 });
