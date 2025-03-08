@@ -407,7 +407,7 @@ class BlogImageController extends Controller
     {
         try {
             // Fetch all images from the database
-            $images = Image::all(['id', 'file_path']);
+            $images = Image::all(['id', 'file_path','title','description']);
 
             if ($images->isEmpty()) {
                 return response()->json([
@@ -420,6 +420,8 @@ class BlogImageController extends Controller
             $imageData = $images->map(function ($image) {
                 return [
                     'id' => $image->id,
+                    'title' => $image->title,
+                    'description' => $image->description,
                     'url' => asset("https://exploredition.com/storage/app/public/{$image->file_path}")
                 ];
             });
@@ -502,6 +504,50 @@ class BlogImageController extends Controller
                 'success' => true,
                 'message' => 'All images retrieved successfully!',
                 'images' => $imageData
+            ], 200);
+    
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred: ' . $th->getMessage(),
+            ], 500);
+        }
+    }
+    public function getImagesWithStats()
+    {
+        try {
+            // Fetch all images with transCode
+            $images = Image::all(['id', 'transCode', 'title', 'description', 'file_path']);
+    
+            if ($images->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No images found.',
+                ], 201);
+            }
+    
+            // Map images with corresponding stats
+            $imageData = $images->map(function ($image) {
+                // Get stats linked to the transCode of the image
+                $stats = DB::table('stats')
+                    ->where('transCode', $image->transCode)
+                    ->select('id', 'trans_no', 'transCode', 'value', 'label', 'created_at')
+                    ->get();
+    
+                return [
+                    'id' => $image->id,
+                    'transCode' => $image->transCode,
+                    'title' => $image->title,
+                    'description' => $image->description,
+                    'url' => asset("https://exploredition.com/storage/app/public/{$image->file_path}"),
+                    'stats' => $stats, // Attach the stats
+                ];
+            });
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'All images with stats retrieved successfully!',
+                'data' => $imageData
             ], 200);
     
         } catch (\Throwable $th) {
