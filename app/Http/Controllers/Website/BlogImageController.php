@@ -16,7 +16,15 @@ class BlogImageController extends Controller
 {
     public function saveOrUpdateImages(Request $request)
     {
-        $validated = $request->validate([
+        $validated = $request->all();
+    
+        // Decode JSON string to an array if needed
+        if ($request->has('stats') && is_string($request->stats)) {
+            $validated['stats'] = json_decode($request->stats, true);
+        }
+    
+        // Validate input fields
+        $validator = Validator::make($validated, [
             'files' => 'nullable|array',
             'files.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'transNo' => 'required|string',
@@ -27,6 +35,14 @@ class BlogImageController extends Controller
             'stats.*.value' => 'required|string',
             'stats.*.label' => 'required|string',
         ]);
+    
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first(),
+                'errors' => $validator->errors()
+            ]);
+        }
     
         try {
             DB::beginTransaction();
@@ -40,23 +56,17 @@ class BlogImageController extends Controller
     
             if ($transCode) {
                 // Update existing record
-                DB::table('images')
-                    ->where('transCode', $transCode)
-                    ->update([
-                        'title' => $title,
-                        'description' => $description,
-                        'updated_at' => now(),
-                    ]);
-    
-                // Delete old stats and insert new ones
+                DB::table('images')->where('transCode', $transCode)->update([
+                    'title' => $title,
+                    'description' => $description,
+                    'updated_at' => now(),
+                ]);
                 DB::table('stats')->where('transCode', $transCode)->delete();
             } else {
-                // Generate new transCode if not provided (saving new record)
                 $lastTransCode = DB::table('images')->max('transCode');
                 $transCode = empty($lastTransCode) ? 1 : $lastTransCode + 1;
             }
     
-            // Save Stats
             foreach ($stats as $stat) {
                 DB::table('stats')->insert([
                     'user_code' => $user->code,
