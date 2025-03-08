@@ -345,7 +345,42 @@ class BlogImageController extends Controller
         ], 200);
     }
 
-    
+    public function deleteByTransCode($transCode)
+    {
+        try {
+            DB::beginTransaction(); // Start transaction
+
+            // Check if the transaction exists
+            $imageExists = DB::table('images')->where('transCode', $transCode)->exists();
+            if (!$imageExists) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Transaction not found.'
+                ], 404);
+            }
+
+            // ✅ Delete stats first (foreign key dependency)
+            DB::table('stats')->where('transCode', $transCode)->delete();
+
+            // ✅ Delete images
+            DB::table('images')->where('transCode', $transCode)->delete();
+
+            DB::commit(); // Commit transaction
+
+            return response()->json([
+                'success' => true,
+                'message' => "Records with transCode {$transCode} deleted successfully."
+            ], 200);
+
+        } catch (\Throwable $th) {
+            DB::rollBack(); // Rollback on error
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred: ' . $th->getMessage(),
+            ]);
+        }
+    }
+
     public function delete_blogImage($id)
     {
 
