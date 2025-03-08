@@ -13,8 +13,108 @@ use Illuminate\Support\Facades\DB;
 
 class BlogImageController extends Controller
 {
-
     public function uploadImages(Request $request)
+    {
+        $data = $request->all();
+    
+        // Decode JSON string to array
+        if ($request->has('stats')) {
+            $data['stats'] = json_decode($request->input('stats'), true);
+        }
+    
+        // Validate input fields
+        $validator = Validator::make($data, [
+            'files' => 'required|array',
+            'files.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'transNo' => 'required|string',
+            'title' => 'required|string',
+            'description' => 'required|string',
+            'stats' => 'required|array', // Ensure 'stats' is an array
+            'stats.*.value' => 'required|string',
+            'stats.*.label' => 'required|string',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->all(),
+            ]);
+        }
+    
+        // Check if files are uploaded
+        if (!$request->hasFile('files')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No file was uploaded.',
+            ]);
+        }
+    
+        try {
+            DB::beginTransaction(); // Start transaction
+    
+            $user = Auth::user();
+            $userCode = $user->code ?? 'default_user'; 
+            $transNo = $request->input('transNo');
+            $title = $request->input('title');
+            $description = $request->input('description');
+            $stats = $data['stats']; // Now stats is properly formatted as an array
+            $uploadedFiles = [];
+    
+            foreach ($request->file('files') as $file) {
+                $uuid = Str::uuid(); 
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $folderPath = "uploads/{$userCode}/TransNo/{$transNo}/{$uuid}";
+    
+                // Store the file
+                $photoPath = $file->storeAs($folderPath, $fileName, 'public');
+                $photoUrl = asset(Storage::url($photoPath));
+    
+                // Save file details in DB
+                $image = Image::create([
+                    'user_code' => $user->code,
+                    'file_path' => $photoPath,
+                    'trans_no'  => $transNo,
+                    'title' => $title,
+                    'description' => $description,
+                ]);
+    
+                $uploadedFiles[] = [
+                    'user_code' => $image->user_code,
+                    'trans_no'  => $image->trans_no,
+                    'file_path' => $photoUrl
+                ];
+            }
+    
+            // Save Stats
+            foreach ($stats as $stat) {
+                DB::table('stats')->insert([
+                    'user_code' => $user->code,
+                    'trans_no' => $transNo,
+                    'value' => $stat['value'],
+                    'label' => $stat['label'],
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+    
+            DB::commit(); // Commit transaction
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'Images and stats uploaded successfully!',
+                'files' => $uploadedFiles
+            ], 201);
+    
+        } catch (\Throwable $th) {
+            DB::rollBack(); // Rollback on error
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred: ' . $th->getMessage(),
+            ]);
+        }
+    }
+    
+    public function uploadImageskk(Request $request)
     {
         $data = $request->all();
 
