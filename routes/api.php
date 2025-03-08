@@ -51,7 +51,7 @@ Route::post('register',[RegisterController::class,'register'])->name('register')
 Route::post('accountactivation',[RegisterController::class,'accountactivation'])->name('accountactivation');
 
 
-//website module
+//website module public
   Route::prefix('websitemodule')->group(function () {
 
     // Route to create a new module
@@ -67,9 +67,6 @@ Route::post('accountactivation',[RegisterController::class,'accountactivation'])
     Route::get('get_contact', [ContactController::class, 'get_contact']);
     Route::get('getImagesPublic', [BlogImageController::class, 'getImagesPublic']);
 });
-//public
-
-
 
 
 Route::middleware(['auth:sanctum','checkstatus'])->group(function () {

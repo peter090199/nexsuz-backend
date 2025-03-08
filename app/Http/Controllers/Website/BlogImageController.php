@@ -13,11 +13,6 @@ use Illuminate\Support\Facades\DB;
 
 class BlogImageController extends Controller
 {
-    // public function __construct()
-    // {
-    //     $this->middleware('auth:sanctum'); // Require authentication
-    // }
-
 
     public function uploadImages(Request $request)
     {
@@ -27,7 +22,9 @@ class BlogImageController extends Controller
         $validator = Validator::make($data, [
             'files' => 'required|array',
             'files.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'transNo' => 'required|string'
+            'transNo' => 'required|string',
+            'title' => 'required|string',
+            'description' => 'required|string',
         ]);
 
         if ($validator->fails()) {
@@ -50,6 +47,8 @@ class BlogImageController extends Controller
             $user = Auth::user();
             $userCode = $user->code ?? 'default_user'; // Fallback for user code
             $transNo = $request->input('transNo');
+            $title = $request->input('title');
+            $description = $request->input('description');
             $uploadedFiles = [];
 
             foreach ($request->file('files') as $file) {
@@ -67,7 +66,9 @@ class BlogImageController extends Controller
                 $image = Image::create([
                     'user_code' => $user->code,
                     'file_path' => $photoPath, // Store relative path
-                    'trans_no'  => $transNo
+                    'trans_no'  => $transNo,
+                    'title'=> $title,
+                    'description' => $description,
                 ]);
 
                 // Append the image data with full accessible URL

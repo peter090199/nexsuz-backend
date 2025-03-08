@@ -11,7 +11,9 @@ class Image extends Model
     protected $fillable = [
         'user_code',
         'file_path',
-        'trans_no' 
+        'trans_no',
+        'title',
+        'description'
     ];
     
     public function user()
