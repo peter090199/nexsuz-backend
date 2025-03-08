@@ -281,7 +281,7 @@ class BlogImageController extends Controller
     {
         try {
             // Fetch all images from the database
-            $images = Image::select('id', 'transCode','title','description', 'file_path')->get();
+            $images = Image::all(['id','transCode','title','description','file_path']);
     
             // If no images are found, return a message
             if ($images->isEmpty()) {
