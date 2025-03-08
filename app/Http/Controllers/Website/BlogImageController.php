@@ -25,6 +25,9 @@ class BlogImageController extends Controller
             'transNo' => 'required|string',
             'title' => 'required|string',
             'description' => 'required|string',
+            'stats' => 'nullable|array',
+            'stats.*.value' => 'required|string',
+            'stats.*.label' => 'required|string',
         ]);
 
         if ($validator->fails()) {
@@ -49,6 +52,7 @@ class BlogImageController extends Controller
             $transNo = $request->input('transNo');
             $title = $request->input('title');
             $description = $request->input('description');
+            $stats = $request->input('stats', []); // Get stats or default empty array
             $uploadedFiles = [];
 
             foreach ($request->file('files') as $file) {
@@ -69,6 +73,7 @@ class BlogImageController extends Controller
                     'trans_no'  => $transNo,
                     'title'=> $title,
                     'description' => $description,
+                    'stats' => json_encode($stats), // Store stats as JSON
                 ]);
 
                 // Append the image data with full accessible URL

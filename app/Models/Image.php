@@ -13,9 +13,12 @@ class Image extends Model
         'file_path',
         'trans_no',
         'title',
-        'description'
+        'description',
+        'stats',
     ];
-    
+    protected $casts = [
+        'stats' => 'array', // Automatically cast stats JSON to array
+    ];
     public function user()
     {
         return $this->belongsTo(User::class, 'user_code', 'code'); // Assuming `code` is a unique identifier for users
