@@ -75,27 +75,26 @@ class BlogController extends Controller
         }
     }
     
-    
     public function get_blogByPublic(Request $request)
     {
         try {
             if ($request->filled('transNo')) {
                 $blog = Blog::where('transNo', $request->transNo)->firstOrFail();
-    
+
                 return response()->json([
                     'success' => true,
                     'data' => $this->filterContactData($blog)
                 ], 200);
             }
-    
-            // Fetch all records efficiently
-            $data = Blog::get()->map(fn($item) => $this->filterContactData($item));
-    
+
+            // Fetch all records
+            $data = Blog::all()->map(fn($item) => $this->filterContactData($item));
+
             return response()->json([
                 'success' => true,
                 'data' => $data
             ], 200);
-    
+
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
@@ -110,6 +109,7 @@ class BlogController extends Controller
             ], 500);
         }
     }
+
     
 
     public function get_blogByRole(Request $request)
