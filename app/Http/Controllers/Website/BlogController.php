@@ -79,7 +79,6 @@ class BlogController extends Controller
     public function get_blogByPublic(Request $request)
     {
         try {
-            $timezone = new CarbonTimeZone('Asia/Manila');
             if ($request->has('transNo')) {
                 $c = Blog::where('transNo', $request->transNo)->first();
     
@@ -98,7 +97,7 @@ class BlogController extends Controller
             }
     
             // Fetch all records
-            $data = Blog::all()->map(fn($item) => $this->filterContactData($item, $timezone));
+            $data = Blog::all()->map(fn($item) => $this->filterContactData($item));
     
             return response()->json([
                 'success' => true,
