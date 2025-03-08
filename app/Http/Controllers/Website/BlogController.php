@@ -93,12 +93,12 @@ class BlogController extends Controller
     
                 return response()->json([
                     'success' => true,
-                    'data' => $this->filterContactData($c, $user)
+                    'data' => $this->filterContactData($c)
                 ], 200);
             }
     
             // Fetch all records
-            $data = Blog::all()->map(fn($item) => $this->filterContactData($item, $user, $timezone));
+            $data = Blog::all()->map(fn($item) => $this->filterContactData($item, $timezone));
     
             return response()->json([
                 'success' => true,
