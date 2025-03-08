@@ -71,8 +71,8 @@ class BlogImageController extends Controller
                 $photoUrl = asset(Storage::url($photoPath));
     
 
-                $trans = Module::max('transNo');
-                $controlNumbers = empty($trans) ? 1 : $trans + 1;
+                $lastTransCode = DB::table('images')->max('transCode'); 
+                $controlNumbers = empty($lastTransCode) ? 1 : $lastTransCode + 1;
                 // Save file details in DB
                 $image = Image::create([
                     'user_code' => $user->code,
