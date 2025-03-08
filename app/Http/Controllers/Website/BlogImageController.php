@@ -69,11 +69,15 @@ class BlogImageController extends Controller
                 $photoPath = $file->storeAs($folderPath, $fileName, 'public');
                 $photoUrl = asset(Storage::url($photoPath));
     
+
+                $trans = Module::max('transNo');
+                $controlNumbers = empty($trans) ? 1 : $trans + 1;
                 // Save file details in DB
                 $image = Image::create([
                     'user_code' => $user->code,
                     'file_path' => $photoPath,
                     'trans_no'  => $transNo,
+                    'transCode' => $controlNumbers,
                     'title' => $title,
                     'description' => $description,
                 ]);
@@ -90,6 +94,7 @@ class BlogImageController extends Controller
                 DB::table('stats')->insert([
                     'user_code' => $user->code,
                     'trans_no' => $transNo,
+                    'transCode' => $controlNumbers,
                     'value' => $stat['value'],
                     'label' => $stat['label'],
                     'created_at' => now(),

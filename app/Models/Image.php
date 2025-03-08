@@ -15,7 +15,9 @@ class Image extends Model
         'title',
         'description',
         'stats',
+        'transCode'
     ];
+
     protected $casts = [
         'stats' => 'array', // Automatically cast stats JSON to array
     ];
