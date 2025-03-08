@@ -79,32 +79,30 @@ class BlogController extends Controller
     public function get_blogByPublic(Request $request)
     {
         try {
-            if ($request->has('transNo')) {
-                $c = Blog::where('transNo', $request->transNo)->first();
-    
-                if (!$c) {
-                    return response()->json([
-                        'success' => false,
-                        'error' => 'Not Found',
-                        'message' => "No record found for TransNo '{$request->transNo}'."
-                    ], 404);
-                }
+            if ($request->filled('transNo')) {
+                $blog = Blog::where('transNo', $request->transNo)->firstOrFail();
     
                 return response()->json([
                     'success' => true,
-                    'data' => $this->filterContactData($c)
+                    'data' => $this->filterContactData($blog)
                 ], 200);
             }
     
-            // Fetch all records
-            $data = Blog::all()->map(fn($item) => $this->filterContactData($item));
+            // Fetch all records efficiently
+            $data = Blog::get()->map(fn($item) => $this->filterContactData($item));
     
             return response()->json([
                 'success' => true,
                 'data' => $data
             ], 200);
     
-        } catch (Exception $e) {
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Not Found',
+                'message' => "No record found for TransNo '{$request->transNo}'."
+            ], 404);
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'error' => 'Something went wrong!',
@@ -112,6 +110,7 @@ class BlogController extends Controller
             ], 500);
         }
     }
+    
 
     public function get_blogByRole(Request $request)
     {
