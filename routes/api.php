@@ -137,6 +137,6 @@ Route::middleware(['auth:sanctum','checkstatus'])->group(function () {
     Route::delete('deleteByTransCode/{transCode}', [BlogImageController::class, 'deleteByTransCode']);
     Route::post('updateImages', [BlogImageController::class, 'updateImages']);
 
-    
+    Route::post('saveOrUpdateImages', [BlogImageController::class, 'saveOrUpdateImages']);
 });
 

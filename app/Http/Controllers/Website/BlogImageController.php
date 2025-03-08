@@ -14,7 +14,99 @@ use App\Models\Module;
 
 class BlogImageController extends Controller
 {
-  
+    public function saveOrUpdateImages(Request $request)
+    {
+        $validated = $request->validate([
+            'files' => 'nullable|array',
+            'files.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'transNo' => 'required|string',
+            'transCode' => 'nullable|integer|exists:images,transCode',
+            'title' => 'required|string',
+            'description' => 'required|string',
+            'stats' => 'required|array',
+            'stats.*.value' => 'required|string',
+            'stats.*.label' => 'required|string',
+        ]);
+    
+        try {
+            DB::beginTransaction();
+    
+            $user = Auth::user();
+            $transNo = $validated['transNo'];
+            $title = $validated['title'];
+            $description = $validated['description'];
+            $stats = $validated['stats'];
+            $transCode = $validated['transCode'] ?? null;
+    
+            if ($transCode) {
+                // Update existing record
+                DB::table('images')
+                    ->where('transCode', $transCode)
+                    ->update([
+                        'title' => $title,
+                        'description' => $description,
+                        'updated_at' => now(),
+                    ]);
+    
+                // Delete old stats and insert new ones
+                DB::table('stats')->where('transCode', $transCode)->delete();
+            } else {
+                // Generate new transCode if not provided (saving new record)
+                $lastTransCode = DB::table('images')->max('transCode');
+                $transCode = empty($lastTransCode) ? 1 : $lastTransCode + 1;
+            }
+    
+            // Save Stats
+            foreach ($stats as $stat) {
+                DB::table('stats')->insert([
+                    'user_code' => $user->code,
+                    'trans_no' => $transNo,
+                    'transCode' => $transCode,
+                    'value' => $stat['value'],
+                    'label' => $stat['label'],
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+    
+            $uploadedFiles = [];
+            if ($request->hasFile('files')) {
+                foreach ($request->file('files') as $file) {
+                    $uuid = Str::uuid();
+                    $fileName = time() . '_' . $file->getClientOriginalName();
+                    $folderPath = "uploads/{$user->code}/TransNo/{$transNo}/{$uuid}";
+                    $photoPath = $file->storeAs($folderPath, $fileName, 'public');
+    
+                    $image = Image::create([
+                        'user_code' => $user->code,
+                        'file_path' => $photoPath,
+                        'trans_no' => $transNo,
+                        'transCode' => $transCode,
+                        'title' => $title,
+                        'description' => $description,
+                    ]);
+    
+                    $uploadedFiles[] = [
+                        'user_code' => $image->user_code,
+                        'trans_no' => $image->trans_no,
+                        'file_path' => asset(Storage::url($photoPath))
+                    ];
+                }
+            }
+    
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => $request->has('transCode') ? 'Updated successfully!' : 'Saved successfully!',
+                'files' => $uploadedFiles,
+            ], 201);
+    
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => $th->getMessage()]);
+        }
+    }
+    
     public function uploadImages(Request $request)
     {
         $data = $request->all();
