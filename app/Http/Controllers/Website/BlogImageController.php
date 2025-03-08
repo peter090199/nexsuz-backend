@@ -294,11 +294,14 @@ class BlogImageController extends Controller
             // Convert file paths to full URLs and include the ID
             $imageData = $images->map(function ($image) {
                 return [
-                   'images' => $imageData,
-                    'url' => asset("https://exploredition.com/storage/app/public/{$image->file_path}")
+                    'id' => $image->id, // Correctly reference image properties
+                    'transCode' => $image->transCode,
+                    'title' => $image->title,
+                    'description' => $image->description,
+                    'url' => url("storage/{$image->file_path}") // Correct URL format
                 ];
             });
-    
+            
             return response()->json([
                 'success' => true,
                 'message' => 'All images retrieved successfully!',
