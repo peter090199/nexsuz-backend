@@ -295,7 +295,7 @@ class BlogImageController extends Controller
             $imageData = $images->map(function ($image) {
                 return [
                     'id' => $image->id,
-                    'transCode' =>$transCode->transCode,
+                    'transCode' => $image->transCode,
                     'url' => asset("https://exploredition.com/storage/app/public/{$image->file_path}")
                 ];
             });
