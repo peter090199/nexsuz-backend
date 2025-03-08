@@ -121,6 +121,90 @@ class BlogImageController extends Controller
         }
     }
     
+
+    public function updateImages(Request $request)
+    {
+        $data = $request->all();
+
+        // Decode JSON string to array
+        if ($request->has('stats')) {
+            $data['stats'] = json_decode($request->input('stats'), true);
+        }
+
+        // Validate input fields
+        $validator = Validator::make($data, [
+            'transCode' => 'required|integer|exists:images,transCode', // Ensure transCode exists in DB
+            'title' => 'required|string',
+            'description' => 'required|string',
+            'stats' => 'required|array',
+            'stats.*.value' => 'required|string',
+            'stats.*.label' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->all(),
+            ]);
+        }
+
+        try {
+            DB::beginTransaction(); // Start transaction
+
+            $user = Auth::user();
+            $transCode = $request->input('transCode');
+            $title = $request->input('title');
+            $description = $request->input('description');
+            $stats = $data['stats'];
+
+            // Update image details where transCode matches
+            $updated = DB::table('images')
+                ->where('transCode', $transCode)
+                ->update([
+                    'title' => $title,
+                    'description' => $description,
+                    'updated_at' => now(),
+                ]);
+
+            if (!$updated) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No matching record found for transCode ' . $transCode,
+                ]);
+            }
+
+            // Update stats (delete old stats and insert new ones)
+            DB::table('stats')->where('transCode', $transCode)->delete();
+            foreach ($stats as $stat) {
+                DB::table('stats')->insert([
+                    'user_code' => $user->code,
+                    'trans_no' => DB::table('images')->where('transCode', $transCode)->value('trans_no'),
+                    'transCode' => $transCode,
+                    'value' => $stat['value'],
+                    'label' => $stat['label'],
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+
+            DB::commit(); // Commit transaction
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Image details and stats updated successfully!',
+            ]);
+
+        } catch (\Throwable $th) {
+            DB::rollBack(); // Rollback on error
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred: ' . $th->getMessage(),
+            ]);
+        }
+    }
+
+
+
     public function uploadImageskk(Request $request)
     {
         $data = $request->all();
