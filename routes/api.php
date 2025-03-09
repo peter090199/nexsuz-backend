@@ -38,6 +38,7 @@ use App\Http\Controllers\ImageController;
 */  
 
 // PUBLIC
+
 Route::post('login',[LoginController::class,'login'])->name('login');
 
 Route::post('loginUsername',[LoginController::class,'loginUsername'])->name('loginUsername');
