@@ -425,6 +425,7 @@ class BlogImageController extends Controller
                     'url' => asset("https://lightcyan-ram-803545.hostingersite.com/storage/app/public/{$image->file_path}")
                 ];
             });
+            
 
             return response()->json([
                 'success' => true,
