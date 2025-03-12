@@ -422,7 +422,7 @@ class BlogImageController extends Controller
                     'id' => $image->id,
                     'title' => $image->title,
                     'description' => $image->description,
-                    'url' => asset("https://exploredition.com/storage/app/public/{$image->file_path}")
+                    'url' => asset("https://lightcyan-ram-803545.hostingersite.com/storage/app/public/{$image->file_path}")
                 ];
             });
 
