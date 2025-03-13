@@ -496,7 +496,7 @@ class BlogImageController extends Controller
                     'transCode' => $image->transCode,
                     'title' => $image->title,
                     'description' => $image->description,
-                    'url' => asset("https://exploredition.com/storage/app/public/{$image->file_path}")
+                    'url' => asset("https://lightcyan-ram-803545.hostingersite.com/storage/app/public/{$image->file_path}")
                 ];
             });
 
@@ -540,7 +540,7 @@ class BlogImageController extends Controller
                     'transCode' => $image->transCode,
                     'title' => $image->title,
                     'description' => $image->description,
-                    'url' => asset("https://exploredition.com/storage/app/public/{$image->file_path}"),
+                    'url' => asset("https://lightcyan-ram-803545.hostingersite.com/storage/app/public/{$image->file_path}"),
                     'stats' => $stats, // Attach the stats
                 ];
             });
