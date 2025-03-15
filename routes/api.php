@@ -26,6 +26,8 @@ use App\Http\Controllers\Website\BlogImageController;
 
 use App\Http\Controllers\Select2\SelectController;
 use App\Http\Controllers\ImageController;
+use App\Http\Controllers\SearchAccount\UserController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -141,5 +143,9 @@ Route::middleware(['auth:sanctum','checkstatus'])->group(function () {
     Route::post('updateImages', [BlogImageController::class, 'updateImages']);
 
     Route::post('saveOrUpdateImages', [BlogImageController::class, 'saveOrUpdateImages']);
+
+    //search fullname
+    Route::get('searchUsers', [UserController::class, 'searchUsers']);
+
 });
 
