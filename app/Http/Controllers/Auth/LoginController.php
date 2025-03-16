@@ -96,8 +96,13 @@ class LoginController extends Controller
                 // Log out the user
                 Auth::logout();
                 return response()->json(['success' => false, 'message' => "Your account is inactive. Please activate your account through the email we sent to your Gmail."]);
+           
             }
-    
+
+            // Update user's online status
+            $user->is_online = true;
+            $user->save();
+
             // If the account is active, create a token
             $token = $user->createToken('Personal Access Token')->plainTextToken;
 
@@ -109,26 +114,80 @@ class LoginController extends Controller
                     'success' => true,
                     'token' => $token,
                     'message' => 0,
+                    'is_online' => true
                 ]);
             }else{
                 return response()->json([
                     'success' => true,
                     'token' => $token,
                     'message' => 1,
+                    'is_online' => true
                 ]);
             }
         }
         return response()->json(['success' => false, 'message' => 'The email or password is incorrect. Please check your credentials.']);
     }
 
+    
     public function logout(Request $request)
+    {
+        // Get the authenticated user
+        $user = $request->user();
+    
+        if ($user) {
+            // Set the user as offline
+            $user->is_online = false;
+            $user->save();
+    
+            // Revoke the token that was used to authenticate the request
+            $user->currentAccessToken()->delete();
+        }
+    
+        return response()->json(['success' => true, 'message' => 'You have been logged out successfully.']);
+    }
+    
+    public function logoutx(Request $request)
     {
         // Revoke the token that was used to authenticate the request
         $request->user()->currentAccessToken()->delete();
-    
+        $user->is_online = false;
+        $user->save();
+
         return response()->json(['success' => true , 'message' => 'You have been logged out successfully.']);
     }
-
+    public function getIsOnline()
+    {
+        $users = DB::table('users')->select('code', 'is_online')->get();
+        return response()->json([
+            'success' => true,
+            'online' => $users->where('is_online', true)->values(),
+            'offline' => $users->where('is_online', false)->values()
+        ]);
+    }
+    
+    public function getIsOnlinexx(Request $request)
+    {
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'code' => 'required|string|exists:users,code', // Ensure 'code' exists in 'users' table
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()
+            ]);
+        }
+    
+        // Fetch user by 'code'
+        $user = User::where('code', $request->code)->first();
+    
+        return response()->json([
+            'success' => true,
+            'is_online' => (bool) $user->is_online
+        ]);
+    }
+    
 }
 
 

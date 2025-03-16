@@ -30,7 +30,7 @@ class User extends Authenticatable
         'company',
         'code',
         'role_code',
-
+        'is_online'
     ];
 
    
@@ -51,6 +51,7 @@ class User extends Authenticatable
 
     ];
 
+
     /**
      * The attributes that should be cast.
      *
@@ -58,5 +59,6 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'is_online' => 'boolean'
     ];
 }
